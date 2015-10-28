@@ -1,0 +1,14 @@
+CURDIR=${PWD}
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_BIN=$CURRENT_DIR/bin
+ANDROID_HOME="$CURRENT_BIN/android-sdk"
+ANDROID_SDK_HOME="$CURRENT_BIN/android-sdk"
+JAVA_HOME="$CURRENT_BIN/jdk"
+
+export ANDROID_HOME="$CURRENT_BIN/android-sdk"
+export ANDROID_SDK_HOME="$CURRENT_BIN/android-sdk"
+export JAVA_HOME="$CURRENT_BIN/jdk"
+
+export PATH="$JAVA_HOME/bin":"$ANDROID_HOME/platform-tools":"$ANDROID_HOME/tools":"$CURRENT_BIN":"$CURRENT_BIN/node/bin":"$CURRENT_BIN":"$CURRENT_BIN/node_modules/.bin":"$CURRENT_BIN/ant/bin":$PATH
+
+node $CURRENT_DIR/bin/omneedia.js --builder $1 $2 $3 $4 $5 $6 $7 $8 $9

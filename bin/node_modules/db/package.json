@@ -1,0 +1,45 @@
+{
+  "author": {
+    "name": "Stephane Zucatti",
+    "email": "stephane.zucatti@me.com",
+    "url": "http://omneedia.com"
+  },
+  "name": "db",
+  "description": "DB Wrapper for omneedia framework",
+  "version": "1.0.0",
+  "keywords": [
+  ],
+  "homepage": "https://github.com/Omneedia/db",
+  "contributors": [
+
+  ],
+  "private": "true",
+  "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Omneedia/db.git"
+  },
+  "engines": {
+    "node": ">=0.6.15"
+  },
+  "devDependencies": {
+  },
+  "optionalDependencies": {
+  },
+  "scripts": {
+  },
+  "license": "MIT",
+  "readme": "",
+  "readmeFilename": "",
+  "bugs": {
+    "url": "https://github.com/Omneedia/db/issues"
+  },
+  "dependencies": {
+    
+  },
+  "_id": "db@1.0.0",
+  "dist": {
+  },
+  "_resolved": "git+https://git@github.com/Omneedia/db.git",
+  "_from": "git+https://git@github.com/Omneedia/db.git"
+}

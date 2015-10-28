@@ -1,0 +1,1 @@
+taskkill /f /IM mysqld.exe

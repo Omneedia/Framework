@@ -1,0 +1,17 @@
+
+
+CURDIR=${PWD}
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_BIN=$CURRENT_DIR/bin
+ANDROID_HOME="$CURRENT_BIN/android-sdk"
+ANDROID_SDK_HOME="$CURRENT_BIN/android-sdk"
+JAVA_HOME="$CURRENT_BIN/jdk"
+
+export ANDROID_HOME="$CURRENT_BIN/android-sdk"
+export ANDROID_SDK_HOME="$CURRENT_BIN/android-sdk"
+export JAVA_HOME="$CURRENT_BIN/jdk"
+
+export MAGICK_HOME="$CURRENT_BIN/im"
+export DYLD_LIBRARY_PATH="$CURRENT_BIN/im/lib/"
+
+export PATH="$JAVA_HOME/bin":"$ANDROID_HOME/platform-tools":"$ANDROID_HOME/tools":"$CURRENT_BIN":"$CURRENT_BIN/chrome":"$CURRENT_BIN/git":"$CURRENT_BIN/git/bin":"$CURRENT_BIN/git/libexec/git-core":"$CURRENT_BIN/npm/bin":"$CURRENT_BIN/node_modules/.bin":"$CURRENT_BIN/ant/bin":$PATH

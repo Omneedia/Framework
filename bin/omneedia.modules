@@ -1,0 +1,15 @@
+{
+	"*" : [
+		"omneedia.Localizer",
+		"omneedia.App",
+		"omneedia.Auth"	
+	],
+	"desktop": [
+		"omneedia.desktop.Uploader",
+		"omneedia.desktop.GlobalMenu",
+		"Ext.ux.Notification"
+	],
+	"mobile": [
+		"omneedia.mobile.FS"
+	]
+}

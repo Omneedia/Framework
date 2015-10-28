@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<style>
+	.container {
+		position:absolute;
+		top:50%;
+		bottom:50%;
+		left:50%;
+		right:50%;	
+	}
+	.containerPP {
+		width:367px;
+		height:637px;
+		margin-top:-315px;
+		margin-left:-205px;
+	}
+	.containerPL {
+		width:637px;
+		height:367px;
+		margin-top:-205px;
+		margin-left:-315px;
+	}
+	.containerTP {
+		width:701px;
+		height:889px;
+		margin-top:-430px;
+		margin-left:-350px;
+	}
+	.containerTL {
+		width:889px;
+		height:701px;
+		margin-top:-350px;
+		margin-left:-430px;
+	}
+	button.css3button {
+		width: 200px;
+		margin-top:10px;
+		margin-left:20px;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 14px;
+		color: #ffffff;
+		padding: 10px 20px;
+		background: -moz-linear-gradient(
+			top,
+			#42aaff 0%,
+			#003366);
+		background: -webkit-gradient(
+			linear, left top, left bottom, 
+			from(#42aaff),
+			to(#003366));
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		border-radius: 10px;
+		border: 1px solid #003366;
+		-moz-box-shadow:
+			0px 1px 3px rgba(000,000,000,0.5),
+			inset 0px 0px 1px rgba(255,255,255,0.5);
+		-webkit-box-shadow:
+			0px 1px 3px rgba(000,000,000,0.5),
+			inset 0px 0px 1px rgba(255,255,255,0.5);
+		box-shadow:
+			0px 1px 3px rgba(000,000,000,0.5),
+			inset 0px 0px 1px rgba(255,255,255,0.5);
+		text-shadow:
+			0px -1px 0px rgba(000,000,000,0.7),
+			0px 1px 0px rgba(255,255,255,0.3);
+	}	
+	.label {
+		font-family: tahoma;
+		font-size: 12px;
+	}
+	</style>
+</head>
+<body>
+<br>
+	<div style="text-align:left">
+		<button class=css3button id="btntepo">Téléphone portrait</button><br>
+		<button class=css3button id="btntepa">Téléphone paysage</button><br>
+		<button class=css3button id="btntapo">Tablette portrait</button><br>
+		<button class=css3button id="btntapa">Tablette paysage</button><br>
+		<img style="margin-top:100px;bottom:100px;position: absolute" width=240 height=240 id="qrcode" src=""></img>
+	</div>
+	<div id="tepo" style="display:none;" class="container containerPP">
+		<div style="width:100%;height:100%;background-image:url(resources/images/phone-p.jpg)"></div>
+		<iframe style="border:0px solid black;position:absolute;top:79px;left:25px;width:320px;height:480px" id="itepo"></iframe>
+	</div>
+	<div id="tepa" style="display:none;" class="container containerPL">
+		<div style="width:100%;height:100%;background-image:url(resources/images/phone-l.jpg)"></div>
+		<iframe style="border:0px solid black;position:absolute;top:22px;left:79px;width:480px;height:320px" id="itepa"></iframe>
+	</div>
+	<div id="tapo" style="display:none;" class="container containerTP">
+		<div style="width:100%;height:100%;background-image:url(resources/images/tablet-p.jpg)"></div>
+		<iframe style="border:0px solid black;position:absolute;top:87px;left:80px;width:538px;height:718px" id="itapo"></iframe>
+	</div>
+	<div id="tapa" style="display:none;" class="container containerTL">
+		<div style="width:100%;height:100%;background-image:url(resources/images/tablet-l.jpg)"></div>
+		<iframe style="border:0px solid black;position:absolute;top:83px;left:87px;width:718px;height:538px" id="itapa"></iframe>
+	</div>
+
+<script>
+$('#tepo').show();
+$('#itepo').attr('src','/index.html');
+$("button").click(function(){
+	$(".container").hide();
+	$('#'+this.id.split('btn')[1]).show();
+	$('#i'+this.id.split('btn')[1]).attr('src','/index.html');
+});
+$.ajax({
+	url: "/qrcode",
+})
+.done(function( msg ) {
+	document.getElementById('qrcode').src=msg;
+});
+</script>
+</body>
+</html>
