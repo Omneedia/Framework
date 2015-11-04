@@ -1,6 +1,10 @@
 function qstr(str) {
 	//if (typeof str === 'object') return "";
-	if (str=="null") return 'null';
+	console.log('->');	
+	console.log(str);
+	if (str=="null") return 'NULL';
+	if (!str) return "NULL";
+	console.log('<-');
 	try {
 		if (str.indexOf('’')>-1) str=str.replace(/’/g,"'");
 	}catch(e) {};
@@ -434,6 +438,7 @@ module.exports={
 									} else {
 										//console.log('_____ UPDATE');								
 										var fields=[];
+
 										for (var el in o) {
 											if (isDate(el,o[el],response)) {
 												try {
@@ -444,7 +449,7 @@ module.exports={
 											} else {
 												if (typeof o[el] === 'object') fields.push(el+'='+qstr(JSON.stringify(o[el]))); else {
 													try {
-														if (o[el].toLowerCase()=="null") fields.push(el+'='+o[el]); else fields.push(el+'='+qstr(o[el]));													
+														if (o[el].toLowerCase()=="null") fields.push(el+'='+o[el]); else fields.push(el+'='+qstr(o[el]));
 													} catch(e) {
 														fields.push(el+'='+qstr(o[el]));
 													}

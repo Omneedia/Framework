@@ -95,6 +95,8 @@ function removeComments(str) {
 
 function qstr(str) {
 	//if (typeof str === 'object') return "";
+	console.log(str);
+	if (str=="null") return "NULL";
 	try {
 		var obj='\''+str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
 			console.log('o');
