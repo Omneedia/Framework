@@ -1,0 +1,73 @@
+2015-10-28 16:33:24 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
+2015-10-28 16:33:24 0 [Note] /Users/zucatti/omneedia_dev/setup.osx/bin/mysql/bin/mysqld (mysqld 5.6.27) starting as process 50354 ...
+2015-10-28 16:33:24 50354 [Warning] Setting lower_case_table_names=2 because file system for /Users/zucatti/omneedia_dev/setup.osx/bin/mysql/data/ is case insensitive
+2015-10-28 16:33:24 50354 [Note] Plugin 'FEDERATED' is disabled.
+/Users/zucatti/omneedia_dev/setup.osx/bin/mysql/bin/mysqld: Table 'mysql.plugin' doesn't exist
+2015-10-28 16:33:24 50354 [ERROR] Can't open the mysql.plugin table. Please run mysql_upgrade to create it.
+2015-10-28 16:33:24 50354 [Note] InnoDB: Using atomics to ref count buffer pool pages
+2015-10-28 16:33:24 50354 [Note] InnoDB: The InnoDB memory heap is disabled
+2015-10-28 16:33:24 50354 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
+2015-10-28 16:33:24 50354 [Note] InnoDB: Memory barrier is not used
+2015-10-28 16:33:24 50354 [Note] InnoDB: Compressed tables use zlib 1.2.3
+2015-10-28 16:33:24 50354 [Note] InnoDB: Using CPU crc32 instructions
+2015-10-28 16:33:24 50354 [Note] InnoDB: Initializing buffer pool, size = 128.0M
+2015-10-28 16:33:24 50354 [Note] InnoDB: Completed initialization of buffer pool
+2015-10-28 16:33:24 50354 [Note] InnoDB: Highest supported file format is Barracuda.
+2015-10-28 16:33:24 50354 [Note] InnoDB: 128 rollback segment(s) are active.
+2015-10-28 16:33:24 50354 [Note] InnoDB: Waiting for purge to start
+2015-10-28 16:33:24 50354 [Note] InnoDB: 5.6.27 started; log sequence number 1600607
+2015-10-28 16:33:24 50354 [Note] Server hostname (bind-address): '*'; port: 3306
+2015-10-28 16:33:24 50354 [Note] IPv6 is available.
+2015-10-28 16:33:24 50354 [Note]   - '::' resolves to '::';
+2015-10-28 16:33:24 50354 [Note] Server socket created on IP: '::'.
+2015-10-28 16:33:24 50354 [ERROR] Can't start server: Bind on TCP/IP port: Address already in use
+2015-10-28 16:33:24 50354 [ERROR] Do you already have another mysqld server running on port: 3306 ?
+2015-10-28 16:33:24 50354 [ERROR] Aborting
+
+2015-10-28 16:33:24 50354 [Note] Binlog end
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'partition'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'PERFORMANCE_SCHEMA'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_DATAFILES'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_TABLESPACES'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_FOREIGN_COLS'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_FOREIGN'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_FIELDS'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_COLUMNS'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_INDEXES'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_TABLESTATS'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_SYS_TABLES'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_FT_INDEX_TABLE'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_FT_INDEX_CACHE'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_FT_CONFIG'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_FT_BEING_DELETED'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_FT_DELETED'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_FT_DEFAULT_STOPWORD'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_METRICS'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_BUFFER_POOL_STATS'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_BUFFER_PAGE_LRU'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_BUFFER_PAGE'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_CMP_PER_INDEX_RESET'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_CMP_PER_INDEX'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_CMPMEM_RESET'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_CMPMEM'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_CMP_RESET'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_CMP'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_LOCK_WAITS'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_LOCKS'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'INNODB_TRX'
+2015-10-28 16:33:24 50354 [Note] Shutting down plugin 'InnoDB'
+2015-10-28 16:33:24 50354 [Note] InnoDB: FTS optimize thread exiting.
+2015-10-28 16:33:24 50354 [Note] InnoDB: Starting shutdown...
+2015-10-28 16:33:26 50354 [Note] InnoDB: Shutdown completed; log sequence number 1600617
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'BLACKHOLE'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'ARCHIVE'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'MRG_MYISAM'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'MyISAM'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'MEMORY'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'CSV'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'sha256_password'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'mysql_old_password'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'mysql_native_password'
+2015-10-28 16:33:26 50354 [Note] Shutting down plugin 'binlog'
+2015-10-28 16:33:26 50354 [Note] /Users/zucatti/omneedia_dev/setup.osx/bin/mysql/bin/mysqld: Shutdown complete
+
