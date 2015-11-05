@@ -2533,7 +2533,6 @@ function App_Model_Db()
 					_IMPORT[maclasse].belongsTo(_IMPORT[LINKS[k].tb],{as: LINKS[k].as});
 				};
 				console.log('		- Creating '+maclasse);
-				//_IMPORT[maclasse].sync({force: true}).then(function(){;
 				if (XCOM.length>0) {
 					COM.splice(-1,1);
 					COM.splice(-1,1);
@@ -2545,8 +2544,9 @@ function App_Model_Db()
 				var dbdir=PROJECT_HOME+path.sep+"src"+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.db';
 				if (!fs.existsSync(dbdir)) fs.mkdirSync(dbdir);
 				if (XCOM.length>0) fs.writeFileSync(dbdir+path.sep+maclasse+'.js',ZCOM.join('\n'));						
-				sequelize.sync({force: true});
+				
 			};
+			sequelize.sync({force: true});
 		};
 
 	};
@@ -2817,7 +2817,7 @@ function App_Update(nn,cb)
 					if (_temoin==-1) {
 						_settings.db.push({
 							name: Manifest.db[i],
-							uri: "mysql://user:pass@host:port/db"
+							uri: "mysql://root@127.0.0.1/"+Manifest.db[i]
 						});
 					}
 				}
@@ -3498,7 +3498,7 @@ asciimo.write(" omneedia", "Colossal", function(art){
 				if (Manifest.db) {
 					for (var i=0;i<Manifest.db.length;i++) _settings.db.push({
 						name: Manifest.db[i],
-						uri: "mysql://user:pass@host:3306/db"
+						uri: "mysql://root@127.0.0.1/"+Manifest.db[i]
 					});
 				};
 				fs.writeFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings.json',JSON.stringify(_settings,null,4));			
