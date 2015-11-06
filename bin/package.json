@@ -6,7 +6,6 @@
   "dependencies": {
 	"adm-zip": "0.4.7",
 	"api": "",
-	"asciimo": "0.3.1",
 	"async": "1.2.1",
 	"authom": "",
 	"body-parser": "1.12.4",
@@ -56,7 +55,8 @@
 	"wrench": "1.5.8",
 	"xcas": "0.1.0",
 	"xml2js": "0.4.9",
-	"imagemagick": ""
+	"imagemagick": "",
+	"figlet": ""
   },
   "devDependencies": {},
   "scripts": {

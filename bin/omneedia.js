@@ -79,7 +79,6 @@ PROXY="";
 
 var shelljs=require('shelljs');
 var moment = require('moment');
-var asciimo = require('asciimo').Figlet;
 var colors = require('colors');
 var github=require('github');
 var file=require('fsutil');
@@ -2880,7 +2879,11 @@ function App_Update(nn,cb)
 	});
 };
 
-asciimo.write(" omneedia", "Colossal", function(art){
+var figlet = require('figlet');
+
+figlet(' omneedia', {
+    font: 'ANSI Shadow'
+},function(err, art) {
 
 		console.log('\n        Omneedia Builder v'+$_VERSION);
 		console.log(art.cyan);
