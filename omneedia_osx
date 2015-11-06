@@ -12,9 +12,9 @@ export JAVA_HOME="$CURRENT_BIN/jdk"
 export MAGICK_HOME="$CURRENT_BIN/im"
 export DYLD_LIBRARY_PATH="$CURRENT_BIN/im/lib/"
 
-export PATH="$JAVA_HOME/bin":"$ANDROID_HOME/platform-tools":"$ANDROID_HOME/tools":"$CURRENT_BIN":"$CURRENT_BIN/chrome":"$CURRENT_BIN/git":"$CURRENT_BIN/git/bin":"$CURRENT_BIN/git/libexec/git-core":"$CURRENT_BIN/npm/bin":"$CURRENT_BIN/node_modules/.bin":"$CURRENT_BIN/ant/bin":"$CURRENT_BIN/im":$PATH
+export PATH="$JAVA_HOME/bin":"$ANDROID_HOME/platform-tools":"$ANDROID_HOME/tools":"$CURRENT_BIN":"$CURRENT_BIN/chrome":"$CURRENT_BIN/git":"$CURRENT_BIN/git/bin":"$CURRENT_BIN/git/libexec/git-core":"$CURRENT_BIN/npm/bin":"$CURRENT_BIN/node_modules/.bin":"$CURRENT_BIN/ant/bin":"$CURRENT_BIN/mysql/bin":"$CURRENT_BIN/im":$PATH
 
-nohup "$CURRENT_BIN/mysql/bin/mysqld" -b "$CURRENT_BIN/mysql" &>"$CURRENT_BIN/logs/mysql.log" &
+nohup "$CURRENT_BIN/mysql/bin/mysqld" --defaults-file="$CURRENT_BIN/mysql/my.ini" -b "$CURRENT_BIN/mysql" &>"$CURRENT_BIN/logs/mysql.log" &
 
 clear
 echo
