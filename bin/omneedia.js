@@ -2552,6 +2552,51 @@ function App_Model_Db()
 	
 };
 
+function Update_DB(cb)
+{
+	var DBA=Manifest.db;
+	if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db')) fs.mkdirSync(PROJECT_HOME+require('path').sep+'db');
+	for (var i=0;i<DBA.length;i++) {
+		var o=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "use '+DBA[i]+'"',{silent: true});
+		if (o.output.indexOf('denied')>-1) {
+			var str='  ! Access denied ['+DBA[i]+'] Aborting';
+			console.log(str.yellow);
+			return;
+		};		
+		if (o.output.indexOf('1049')>-1) {
+			var str='    - Creating database ['+DBA[i]+']';
+			console.log(str);
+			shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "CREATE DATABASE '+DBA[i]+'"',{silent: true});
+			console.log('      Done.');
+		}
+	};
+	for (var i=0;i<DBA.length;i++) {
+		if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql')) {
+			var str='    - Dumping database ['+DBA[i]+']';
+			console.log(str);
+			var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
+			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql',o.output);
+			console.log('      Done.');
+		} else {
+			// Compare to the database
+			var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
+			var date = new Date();
+			var year = date.getFullYear();
+			var month = date.getMonth() + 1;
+			month = (month < 10 ? "0" : "") + month;
+			var day  = date.getDate();
+			day = (day < 10 ? "0" : "") + day;			
+			if (o.output!="") {
+				var str='    - Patching database ['+DBA[i]+']';
+				console.log(str);
+				fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.patch-'+year+'-'+month+'-'+day+'.sql',o.output);
+				console.log('      Done.');			
+			}
+		}
+	};
+	cb();
+};
+
 function App_Update(nn,cb)
 {
 	console.log('  - Updating project');
@@ -2598,285 +2643,289 @@ function App_Update(nn,cb)
 			}
 		};
 	};
-
-	make_resources(function() {
-		
-		// updating manifest
-		manifest.namespace=PACKAGE_NAME;
-		if (manifest.title=="App") manifest.title=PACKAGE_NAME;
-		if (manifest.description=="Template") manifest.description="Package description goes here";
-		var uniqueid=require('node-uuid');
-		if (manifest.uid=="e4182ba0-d423-11e3-9c1a-0800200c9a66") manifest.uid=uniqueid.v4();
-		var date=new Date();
-		var year = date.getFullYear();
-		if (manifest.copyright=="XXX") manifest.copyright='Copyright (c) '+year+' By '+PACKAGE_COMPANY;
-		// saving manifest
-		fs.writeFileSync(PROJECT_HOME+path.sep+'app.manifest',JSON.stringify(manifest,null,4));
-		
-		// making settings
-		Settings={};
-		Settings.DEBUG=true;
-		Settings.NAMESPACE=manifest.namespace;
-		Settings.TITLE=manifest.title;
-		Settings.DESCRIPTION=manifest.description
-		Settings.COPYRIGHT=manifest.copyright;
-		Settings.TYPE=manifest.type;
-		Settings.PLATFORM=manifest.targets;
-		Settings.TYPE=manifest.platform;
-		Settings.LANGS=manifest.langs;
-		Settings.AUTH={
-			passports: [
+	
+	console.log('  - Updating databases');
+	Update_DB(function() {
+		make_resources(function() {
 				
-			],
-			passport: {
-			
-			}
-		};
-		for (var i=0;i<manifest.auth.length;i++)
-		{
-			var t0=__dirname+path.sep+"auth.template"+path.sep+manifest.auth[i]+".config";
-			if (fs.existsSync(t0)) {
-				t0=JSON.parse(fs.readFileSync(t0,'utf-8'));
-				Settings.AUTH.passports.push(t0.type);
-				Settings.AUTH.passport[t0.type]= {
-					caption: "PASSPORT_"+manifest.auth[i].toUpperCase()
-				};
-			}
-		};		
-		var frameworks=[];
-		var resources=[];
-		for (var i=0;i<manifest.frameworks.length;i++) {
-			var m=manifest.frameworks[i];
-			if (m.src) {
-				if (m.src.constructor === Array) {
-					for (var zz=0;zz<m.src.length;zz++) {
-						var src=m.src[zz].replace(/{version}/g,m.version);
-						src=src.replace(/{theme}/g,m.theme);
-						frameworks.push(src);
-					}
-				} else {
-					var src=m.src.replace(/{version}/g,m.version);
-					src=src.replace(/{theme}/g,m.theme);
-					frameworks.push(src);
-				}
-			};
-			if (m.res) {
-				if (m.res.constructor === Array) {
-					for (var zz=0;zz<m.res.length;zz++) {
-						var res=m.res[zz].replace(/{version}/g,m.version);
-						res=res.replace(/{theme}/g,m.theme);
-						resources.push(res);
-					}				
-				} else {
-					var res=m.res.replace(/{version}/g,m.version);				
-					res=res.replace(/{theme}/g,m.theme);
-					resources.push(res);
-				}
-			};
-		};
-		Settings.FRAMEWORKS=frameworks;
-		Settings.RESOURCES=resources;
-		if (manifest.platform=="desktop") {
-			Settings.RESOURCES.push(CDN+"/omneedia/res/webapp.css");
-			Settings.RESOURCES.push(CDN+"/ext/res/ux.css");
-			Settings.RESOURCES.push("Contents/Resources/webapp.css");
-		};
-		if (manifest.platform=="mobile") {
-			Settings.RESOURCES.push(CDN+"/omneedia/res/mobi.css");
-			Settings.RESOURCES.push("Contents/Resources/mobi.css");		
-		};
-		if (manifest.libraries)
-		Settings.LIBRARIES=manifest.libraries;
-		else
-		Settings.LIBRARIES=[];
-		// we load omneedia.modules
-		var SETMODULES=JSON.parse(require('fs').readFileSync(__dirname+require('path').sep+'omneedia.modules','utf-8'));
-		
-		Settings.PATHS = {
-			"Contents": "Contents/Application/app",
-			"Culture": "Contents/Culture",
-			"omneedia": CDN+"/omneedia",
-			"Ext.ux": CDN+"/ext/ux",
-			"Ext.plugin": CDN+"/ext/plugin",
-			"Ext.util": CDN+"/ext/util"		
-		};
-		Settings.CONTROLLERS=[];
-		for (var i=0;i<manifest.controllers.length;i++) Settings.CONTROLLERS.push(manifest.controllers[i]);
-		Settings.MODULES = SETMODULES['*'];
-		
-		Settings.LIBRARIES=[];
-		if (manifest.libraries)
-		for (var i=0;i<manifest.libraries.length;i++) Settings.LIBRARIES.push(manifest.libraries[i]);
-		
-		if (manifest.platform=="desktop") {
-			for (var i=0;i<SETMODULES.desktop.length;i++) {
-				Settings.MODULES.push(SETMODULES.desktop[i]);
-			}
-		};
-		if (manifest.platform=="mobile") {
-			for (var i=0;i<SETMODULES.mobile.length;i++) {
-				Settings.MODULES.push(SETMODULES.mobile[i]);
-			}
-		};
-		
-		for (var i=0;i<manifest.modules.length;i++) Settings.MODULES.push(manifest.modules[i]);
-
-		Settings.AUTHORS=[];
-		Settings.API=[];
-		Settings.API.push('__QUERY__');
-		for (var i=0;i<manifest.api.length;i++) Settings.API.push(manifest.api[i]);
-		
-		Settings.AUTHORS.push({
-			role: "creator",
-			name: manifest.author.name,
-			mail: manifest.author.mail,
-			twitter: manifest.author.twitter,
-			web: manifest.author.web,
-			github: manifest.author.github
-		});
-		
-		// REMOTES
-		try {
-			if (MSettings) {
-				if (MSettings.remote) {
-					if (MSettings.remote.auth) {
-						Settings.REMOTE_AUTH=MSettings.remote.auth;
-					}
-					if (MSettings.remote.api) {
-						Settings.REMOTE_API=MSettings.remote.auth;
+				// updating manifest
+				manifest.namespace=PACKAGE_NAME;
+				if (manifest.title=="App") manifest.title=PACKAGE_NAME;
+				if (manifest.description=="Template") manifest.description="Package description goes here";
+				var uniqueid=require('node-uuid');
+				if (manifest.uid=="e4182ba0-d423-11e3-9c1a-0800200c9a66") manifest.uid=uniqueid.v4();
+				var date=new Date();
+				var year = date.getFullYear();
+				if (manifest.copyright=="XXX") manifest.copyright='Copyright (c) '+year+' By '+PACKAGE_COMPANY;
+				// saving manifest
+				fs.writeFileSync(PROJECT_HOME+path.sep+'app.manifest',JSON.stringify(manifest,null,4));
+				
+				// making settings
+				Settings={};
+				Settings.DEBUG=true;
+				Settings.NAMESPACE=manifest.namespace;
+				Settings.TITLE=manifest.title;
+				Settings.DESCRIPTION=manifest.description
+				Settings.COPYRIGHT=manifest.copyright;
+				Settings.TYPE=manifest.type;
+				Settings.PLATFORM=manifest.targets;
+				Settings.TYPE=manifest.platform;
+				Settings.LANGS=manifest.langs;
+				Settings.AUTH={
+					passports: [
+						
+					],
+					passport: {
+					
 					}
 				};
-			};
-		}catch(e) {
-		
-		};
-		
-		for (var el in manifest.team) {
-			var tabx=manifest.team[el];
-			var role=el;
-			for (var i=0;i<tabx.length;i++) {
-				Settings.AUTHORS.push({
-					role: role,
-					name: tabx[i].name,
-					mail: tabx[i].mail,
-					twitter: tabx[i].twitter,
-					web: tabx[i].web,
-					github: tabx[i].github
-				});				
-			};
-		};
-		
-		Settings.VERSION=manifest.version;
-		Settings.BUILD=manifest.build;
-		Settings.CDN=CDN;
-		
-		fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Settings.js','Settings='+JSON.stringify(Settings));		
-		var ndx=fs.readFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'index.html','utf-8');
-		ndx=ndx.split('<title>')[0]+'<title>'+manifest.title+'</title>'+ndx.split('</title>')[1];		
-		var style=fs.readFileSync(PROJECT_HOME+path.sep+'.style','utf-8');
-		style=style.replace('{COLOR}',manifest.splashscreen.background);
-		style=style.replace('{BKCOLOR}',manifest.splashscreen.color);
-		//style=style+'\t.omneedia-overlay{background-color: rgba(0, 0, 0, 0.8);z-index: 9999999999;position:absolute;left:0px;top:0px;width:100%;height:100%;display:none;}\n';
-		style=style+'\t.omneedia-overlay{z-index: 9999999999;position:absolute;left:0px;top:0px;width:100%;height:100%;display:none;}\n';
-		ndx=ndx.split('<style type="text/css">')[0]+'<style type="text/css">\n'+style+'\t</style>'+ndx.split('</style>')[1];
-		fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'index.html',ndx);
-		
-		if (!fs.existsSync(PROJECT_HOME+path.sep+'etc'+path.sep+"settings.json")) {
-			if (!fs.existsSync(PROJECT_HOME+path.sep+'etc')) fs.mkdirSync(PROJECT_HOME+path.sep+'etc');
-			var _settings={
-				auth : {
-				},
-				db: [
-				
-				]
-			};
-			fs.writeFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings.json',JSON.stringify(_settings,null,4));
-		} else _settings=JSON.parse(fs.readFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings.json','utf-8'));
-		
-		if (Manifest.auth) {
-			try {
-				for (var i=0;i<Manifest.auth.length;i++) {
-					if (fs.existsSync(__dirname+path.sep+"auth.template"+path.sep+Manifest.auth[i]+".config")) {
-						var yauth=JSON.parse(fs.readFileSync(__dirname+path.sep+"auth.template"+path.sep+Manifest.auth[i]+".config",'utf-8'));
-						if (!_settings.auth[yauth.type]) _settings.auth[yauth.type]=yauth.config;
+				for (var i=0;i<manifest.auth.length;i++)
+				{
+					var t0=__dirname+path.sep+"auth.template"+path.sep+manifest.auth[i]+".config";
+					if (fs.existsSync(t0)) {
+						t0=JSON.parse(fs.readFileSync(t0,'utf-8'));
+						Settings.AUTH.passports.push(t0.type);
+						Settings.AUTH.passport[t0.type]= {
+							caption: "PASSPORT_"+manifest.auth[i].toUpperCase()
+						};
 					}
-				}
-			}catch(e) {
-			
-			}
-		};
-		
-		if (Manifest.db) {
-			try {
-				for (var i=0;i<Manifest.db.length;i++) {
-					var _temoin=-1;
-					for (var j=0;j<_settings.db.length;j++) {
-						if (_settings.db[j].name==Manifest.db[i]) _temoin=1;
+				};		
+				var frameworks=[];
+				var resources=[];
+				for (var i=0;i<manifest.frameworks.length;i++) {
+					var m=manifest.frameworks[i];
+					if (m.src) {
+						if (m.src.constructor === Array) {
+							for (var zz=0;zz<m.src.length;zz++) {
+								var src=m.src[zz].replace(/{version}/g,m.version);
+								src=src.replace(/{theme}/g,m.theme);
+								frameworks.push(src);
+							}
+						} else {
+							var src=m.src.replace(/{version}/g,m.version);
+							src=src.replace(/{theme}/g,m.theme);
+							frameworks.push(src);
+						}
 					};
-					if (_temoin==-1) {
-						_settings.db.push({
-							name: Manifest.db[i],
-							uri: "mysql://root@127.0.0.1/"+Manifest.db[i]
-						});
+					if (m.res) {
+						if (m.res.constructor === Array) {
+							for (var zz=0;zz<m.res.length;zz++) {
+								var res=m.res[zz].replace(/{version}/g,m.version);
+								res=res.replace(/{theme}/g,m.theme);
+								resources.push(res);
+							}				
+						} else {
+							var res=m.res.replace(/{version}/g,m.version);				
+							res=res.replace(/{theme}/g,m.theme);
+							resources.push(res);
+						}
+					};
+				};
+				Settings.FRAMEWORKS=frameworks;
+				Settings.RESOURCES=resources;
+				if (manifest.platform=="desktop") {
+					Settings.RESOURCES.push(CDN+"/omneedia/res/webapp.css");
+					Settings.RESOURCES.push(CDN+"/ext/res/ux.css");
+					Settings.RESOURCES.push("Contents/Resources/webapp.css");
+				};
+				if (manifest.platform=="mobile") {
+					Settings.RESOURCES.push(CDN+"/omneedia/res/mobi.css");
+					Settings.RESOURCES.push("Contents/Resources/mobi.css");		
+				};
+				if (manifest.libraries)
+				Settings.LIBRARIES=manifest.libraries;
+				else
+				Settings.LIBRARIES=[];
+				// we load omneedia.modules
+				var SETMODULES=JSON.parse(require('fs').readFileSync(__dirname+require('path').sep+'omneedia.modules','utf-8'));
+				
+				Settings.PATHS = {
+					"Contents": "Contents/Application/app",
+					"Culture": "Contents/Culture",
+					"omneedia": CDN+"/omneedia",
+					"Ext.ux": CDN+"/ext/ux",
+					"Ext.plugin": CDN+"/ext/plugin",
+					"Ext.util": CDN+"/ext/util"		
+				};
+				Settings.CONTROLLERS=[];
+				for (var i=0;i<manifest.controllers.length;i++) Settings.CONTROLLERS.push(manifest.controllers[i]);
+				Settings.MODULES = SETMODULES['*'];
+				
+				Settings.LIBRARIES=[];
+				if (manifest.libraries)
+				for (var i=0;i<manifest.libraries.length;i++) Settings.LIBRARIES.push(manifest.libraries[i]);
+				
+				if (manifest.platform=="desktop") {
+					for (var i=0;i<SETMODULES.desktop.length;i++) {
+						Settings.MODULES.push(SETMODULES.desktop[i]);
 					}
-				}
-			}catch(e) {
-			
-			}
-		};		
+				};
+				if (manifest.platform=="mobile") {
+					for (var i=0;i<SETMODULES.mobile.length;i++) {
+						Settings.MODULES.push(SETMODULES.mobile[i]);
+					}
+				};
+				
+				for (var i=0;i<manifest.modules.length;i++) Settings.MODULES.push(manifest.modules[i]);
 
-		fs.writeFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings.json',JSON.stringify(_settings,null,4));
-		
-		// package.json
-		var pkg={
-			name: manifest.namespace,
-			description: manifest.description,
-			dependencies:{},
-			license: manifest.license
-		};
-		for (var j=0;j<manifest.packages.length;j++)
-		{
-			pkg.dependencies[manifest.packages[j]]="*";
-		};
-		if (!fs.existsSync(PROJECT_HOME+path.sep+'bin')) fs.mkdirSync(PROJECT_HOME+path.sep+'bin');
-		fs.writeFileSync(PROJECT_HOME+path.sep+'bin'+path.sep+'package.json',JSON.stringify(pkg,null,4));
-		
-		//update readme.md
-		var readme=fs.readFileSync(PROJECT_HOME+path.sep+'README.md','utf-8');
-		
-		readme=readme.replace('{package.namespace}',manifest.namespace);
-		readme=readme.replace('{package.title}',manifest.title);
-		readme=readme.replace('{package.description}',manifest.description);
-		readme=readme.replace('{package.copyright}',manifest.copyright);
-		readme=readme.replace('(The MIT License)',manifest.license);
-		
-		fs.writeFileSync(PROJECT_HOME+path.sep+'README.md',readme);
-		
-		update_npm();
-		process.chdir(PROJECT_HOME);
-		if (!fs.existsSync(PROJECT_HOME+path.sep+'.git'))
-		{
-			console.log('  - Init local repository');
-			shelljs.exec('git init',{silent: true});
-			console.log('  - First commit');
-			shelljs.exec('git config --global core.autocrlf false',{silent: true});
-			//shelljs.exec('git config --global --unset credential.helper');
-			shelljs.exec('git config --global credential.helper',{silent: true});
-			shelljs.exec('git add --all',{silent: true});
-			shelljs.exec('git commit -m "First commit"',{silent: true});		
-		} else {
-			console.log('  - Updating local repository');
-			shelljs.exec('git config --global core.autocrlf false',{silent: true});
-			shelljs.exec('git add --all',{silent: true});
-			
-			var x=shelljs.exec('git log',{silent: true}).output;			
+				Settings.AUTHORS=[];
+				Settings.API=[];
+				Settings.API.push('__QUERY__');
+				for (var i=0;i<manifest.api.length;i++) Settings.API.push(manifest.api[i]);
+				
+				Settings.AUTHORS.push({
+					role: "creator",
+					name: manifest.author.name,
+					mail: manifest.author.mail,
+					twitter: manifest.author.twitter,
+					web: manifest.author.web,
+					github: manifest.author.github
+				});
+				
+				// REMOTES
+				try {
+					if (MSettings) {
+						if (MSettings.remote) {
+							if (MSettings.remote.auth) {
+								Settings.REMOTE_AUTH=MSettings.remote.auth;
+							}
+							if (MSettings.remote.api) {
+								Settings.REMOTE_API=MSettings.remote.auth;
+							}
+						};
+					};
+				}catch(e) {
+				
+				};
+				
+				for (var el in manifest.team) {
+					var tabx=manifest.team[el];
+					var role=el;
+					for (var i=0;i<tabx.length;i++) {
+						Settings.AUTHORS.push({
+							role: role,
+							name: tabx[i].name,
+							mail: tabx[i].mail,
+							twitter: tabx[i].twitter,
+							web: tabx[i].web,
+							github: tabx[i].github
+						});				
+					};
+				};
+				
+				Settings.VERSION=manifest.version;
+				Settings.BUILD=manifest.build;
+				Settings.CDN=CDN;
+				
+				fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Settings.js','Settings='+JSON.stringify(Settings));		
+				var ndx=fs.readFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'index.html','utf-8');
+				ndx=ndx.split('<title>')[0]+'<title>'+manifest.title+'</title>'+ndx.split('</title>')[1];		
+				var style=fs.readFileSync(PROJECT_HOME+path.sep+'.style','utf-8');
+				style=style.replace('{COLOR}',manifest.splashscreen.background);
+				style=style.replace('{BKCOLOR}',manifest.splashscreen.color);
+				//style=style+'\t.omneedia-overlay{background-color: rgba(0, 0, 0, 0.8);z-index: 9999999999;position:absolute;left:0px;top:0px;width:100%;height:100%;display:none;}\n';
+				style=style+'\t.omneedia-overlay{z-index: 9999999999;position:absolute;left:0px;top:0px;width:100%;height:100%;display:none;}\n';
+				ndx=ndx.split('<style type="text/css">')[0]+'<style type="text/css">\n'+style+'\t</style>'+ndx.split('</style>')[1];
+				fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'index.html',ndx);
+				
+				if (!fs.existsSync(PROJECT_HOME+path.sep+'etc'+path.sep+"settings.json")) {
+					if (!fs.existsSync(PROJECT_HOME+path.sep+'etc')) fs.mkdirSync(PROJECT_HOME+path.sep+'etc');
+					var _settings={
+						auth : {
+						},
+						db: [
+						
+						]
+					};
+					fs.writeFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings.json',JSON.stringify(_settings,null,4));
+				} else _settings=JSON.parse(fs.readFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings.json','utf-8'));
+				
+				if (Manifest.auth) {
+					try {
+						for (var i=0;i<Manifest.auth.length;i++) {
+							if (fs.existsSync(__dirname+path.sep+"auth.template"+path.sep+Manifest.auth[i]+".config")) {
+								var yauth=JSON.parse(fs.readFileSync(__dirname+path.sep+"auth.template"+path.sep+Manifest.auth[i]+".config",'utf-8'));
+								if (!_settings.auth[yauth.type]) _settings.auth[yauth.type]=yauth.config;
+							}
+						}
+					}catch(e) {
+					
+					}
+				};
+				
+				if (Manifest.db) {
+					try {
+						for (var i=0;i<Manifest.db.length;i++) {
+							var _temoin=-1;
+							for (var j=0;j<_settings.db.length;j++) {
+								if (_settings.db[j].name==Manifest.db[i]) _temoin=1;
+							};
+							if (_temoin==-1) {
+								_settings.db.push({
+									name: Manifest.db[i],
+									uri: "mysql://root@127.0.0.1/"+Manifest.db[i]
+								});
+							}
+						}
+					}catch(e) {
+					
+					}
+				};		
 
-			shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});
-		};
-		console.log('    Done.');
-		console.log('');
-		if (cb) cb();
-	});
+				fs.writeFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings.json',JSON.stringify(_settings,null,4));
+				
+				// package.json
+				var pkg={
+					name: manifest.namespace,
+					description: manifest.description,
+					dependencies:{},
+					license: manifest.license
+				};
+				for (var j=0;j<manifest.packages.length;j++)
+				{
+					pkg.dependencies[manifest.packages[j]]="*";
+				};
+				if (!fs.existsSync(PROJECT_HOME+path.sep+'bin')) fs.mkdirSync(PROJECT_HOME+path.sep+'bin');
+				fs.writeFileSync(PROJECT_HOME+path.sep+'bin'+path.sep+'package.json',JSON.stringify(pkg,null,4));
+				
+				//update readme.md
+				var readme=fs.readFileSync(PROJECT_HOME+path.sep+'README.md','utf-8');
+				
+				readme=readme.replace('{package.namespace}',manifest.namespace);
+				readme=readme.replace('{package.title}',manifest.title);
+				readme=readme.replace('{package.description}',manifest.description);
+				readme=readme.replace('{package.copyright}',manifest.copyright);
+				readme=readme.replace('(The MIT License)',manifest.license);
+				
+				fs.writeFileSync(PROJECT_HOME+path.sep+'README.md',readme);
+				
+				update_npm();
+				process.chdir(PROJECT_HOME);
+				if (!fs.existsSync(PROJECT_HOME+path.sep+'.git'))
+				{
+					console.log('  - Init local repository');
+					shelljs.exec('git init',{silent: true});
+					console.log('  - First commit');
+					shelljs.exec('git config --global core.autocrlf false',{silent: true});
+					//shelljs.exec('git config --global --unset credential.helper');
+					shelljs.exec('git config --global credential.helper',{silent: true});
+					shelljs.exec('git add --all',{silent: true});
+					shelljs.exec('git commit -m "First commit"',{silent: true});		
+				} else {
+					console.log('  - Updating local repository');
+					shelljs.exec('git config --global core.autocrlf false',{silent: true});
+					shelljs.exec('git add --all',{silent: true});
+					
+					var x=shelljs.exec('git log',{silent: true}).output;			
+
+					shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});
+				};
+				console.log('    Done.');
+				console.log('');
+				if (cb) cb();
+			});	
+	});	
+	
 };
 
 var figlet = require('figlet');
@@ -2884,7 +2933,7 @@ var figlet = require('figlet');
 figlet(' omneedia', {
     font: 'ANSI Shadow'
 },function(err, art) {
-
+		
 		console.log('\n        Omneedia Builder v'+$_VERSION);
 		console.log(art.cyan);
 		
