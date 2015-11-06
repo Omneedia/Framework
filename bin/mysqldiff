@@ -1,0 +1,2 @@
+MYSQL_DIFF_HOME=$(cd `dirname $0`/_mysqldiff; pwd)
+exec java -classpath "$MYSQL_DIFF_HOME/lib/*" ru.yandex.mysqlDiff.Diff "$@"
