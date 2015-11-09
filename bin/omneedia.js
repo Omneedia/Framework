@@ -2562,17 +2562,15 @@ function Update_DB(cb)
 	var DBA=Manifest.db;
 	var md5=require('md5-file');
 	var __INF__={
-		db: [],
-		files: {}
 	};
 	if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db')) fs.mkdirSync(PROJECT_HOME+require('path').sep+'db');
 	if (!fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) {
-		fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json','{"db":[],"files":[]}');
+		fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json','{}');
 	} else {
 		__INF__=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
 	};
 	if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) {
-		fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json','{"db":[],"files":[]}');
+		fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json','{}');
 	} else {
 		__INF__=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
 	};
@@ -2591,6 +2589,7 @@ function Update_DB(cb)
 		}
 	};
 	for (var i=0;i<DBA.length;i++) {
+		if (fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql')) fs.rmSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql');
 		if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql')) {
 			var str='    - Dumping database ['+DBA[i]+']';
 			console.log(str);
@@ -2598,11 +2597,9 @@ function Update_DB(cb)
 			var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
 			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql',o.output);
 			var x=md5(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql');
-			if (!__INF__.db[DBA[i]]) __INF__.db[DBA[i]]=[];
-			__INF__.db[DBA[i]].push(x);
-			__INF__.files[x]=DBA[i]+'.scheme.sql';
+			__INF__[DBA[i]]=x;
 			console.log('      Done.');
-		} else {
+		};/* else {
 			// Compare to the database
 			var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
 			var date = new Date();
@@ -2621,11 +2618,11 @@ function Update_DB(cb)
 				__INF__.files[x]=DBA[i]+'.patch-'+year+'-'+month+'-'+day+'.sql';
 				console.log('      Done.');			
 			}
-		}
+		}*/
 	};
 	fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json',JSON.stringify(__INF__));
 	fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json',JSON.stringify(__INF__));
-	cb();
+	//cb();
 };
 
 function App_Update(nn,cb)
@@ -2963,7 +2960,8 @@ figlet(' omneedia', {
     font: 'ANSI Shadow'
 },function(err, art) {
 		if (err) {
-			console.log('!!! FATAL !!! \n'+err);
+			var err='\n  !!! GURU MEDITATION !!! \n'+err;
+			console.log(err.red);
 			return;
 		};
 		console.log('\n        Omneedia Builder v'+$_VERSION);
@@ -3165,6 +3163,7 @@ figlet(' omneedia', {
 
 	if (argv.indexOf('update')>-1)
 	{
+		var md5=require('md5-file');
 		console.log('  - Updating project');
 		Update_DB(function() {
 			// test if content has changed
@@ -3174,8 +3173,6 @@ figlet(' omneedia', {
 			shelljs.exec('git reset',{silent: true});
 			test0.pop();
 			test1.pop();
-			console.log(test0);
-			console.log(test1);
 			var diff=test1.diff(test0);
 			if (diff.length>0) {
 				shelljs.exec('git config --global core.autocrlf false',{silent: true});
@@ -3195,6 +3192,25 @@ figlet(' omneedia', {
 					shelljs.exec('git config --global user.name "'+Manifest.author.name+'"',{silent:true});
 					shelljs.exec('git config --global user.email '+Manifest.author.mail,{silent:true});			
 					shelljs.exec('git pull origin master',{silent:true});
+					// detect change beetween db.json
+					if (!fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) {
+						fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json','{"db":[],"files":[]}');						
+					};
+					if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) {
+						fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json','{"db":[],"files":[]}');
+					};
+					var x=md5(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
+					var y=md5(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
+					if (x!=y) {
+						// Change detected !!!
+						var __INF__=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
+						var DBA=Manifest.db;
+						for (var i=0;i<DBA.length;i++) {
+							var fileme=PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql';
+							var o=shelljs.exec('mysqldiff "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root" "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'"',{silent: true});
+							console.log(o.output);
+						}
+					};
 					console.log('\n    Done.');
 				} else {
 					if (REMOTE==BASE) {
@@ -3207,8 +3223,8 @@ figlet(' omneedia', {
 								shelljs.exec('git remote add origin '+Manifest.git,{silent:true});
 							};
 							shelljs.exec('git push -u origin master',{silent: true});
-							console.log('    Done.');						
-						} else console.log("\n  ! There is no github url in manifest".yellow);					
+							console.log('    Done.');
+						} else console.log("\n  ! There is no github url in manifest".yellow);
 					} else {
 						console.log("Can't update repository... #ERR69");
 					}
