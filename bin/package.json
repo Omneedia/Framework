@@ -56,7 +56,8 @@
 	"xcas": "0.1.0",
 	"xml2js": "0.4.9",
 	"imagemagick": "",
-	"figlet": ""
+	"figlet": "",
+	"md5-file": ""
   },
   "devDependencies": {},
   "scripts": {
