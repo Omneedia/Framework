@@ -2353,7 +2353,7 @@ function do_get()
 			console.log('  ! Cloning failed'.yellow);
 		} else {
 			console.log('  - Updating project');
-			App_Update(op);
+			AppUpdate(op);
 		}
 	};
 }
@@ -2941,6 +2941,7 @@ function App_Update(nn,cb)
 				shelljs.exec('git config --global credential.helper',{silent: true});
 				shelljs.exec('git add --all',{silent: true});
 				shelljs.exec('git commit -m "First commit"',{silent: true});		
+				
 			} else {
 				if (nn!='-') {
 					console.log('  - Updating local repository');
@@ -3168,7 +3169,7 @@ figlet(' omneedia', {
 		return;		
 	};
 */
-	function AppUpdate()
+	function AppUpdate(zzz)
 	{
 		if (argv.indexOf('db')>-1) {
 			console.log('  - Updating DB');
@@ -3176,7 +3177,8 @@ figlet(' omneedia', {
 			console.log('    Done.');
 			return;
 		};
-		App_Update('-',function() {
+		if (!zzz) zzz='-';
+		App_Update(zzz,function() {
 			if (fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) 
 			var x=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
 			else
