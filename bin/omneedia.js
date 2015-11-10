@@ -3224,9 +3224,9 @@ figlet(' omneedia', {
 							console.log(str);
 							var err=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "USE '+DBA[i]+';'+o.output.split('\n').join('')+'"',{silent: true});
 							//console.log(err);
-                            x[DBA[i]]=y[DBA[i]];
 							console.log('      Done.');
-						}							
+						}						
+                        x[DBA[i]]=y[DBA[i]];
 					};
                     fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json',JSON.stringify(x));
             };
@@ -3283,11 +3283,11 @@ figlet(' omneedia', {
 				else
 				var y={};
 				var is_new=-1;
-				if (manifest.db.length>0) {
-					for (var i=0;i<manifest.db.length;i++) {
+				if (Manifest.db.length>0) {
+					for (var i=0;i<Manifest.db.length;i++) {
 						var x0,y0=-1;
-						if (x[manifest.db[i]]) x0=x[manifest.db[i]];
-						if (y[manifest.db[i]]) y0=y[manifest.db[i]];
+						if (x[Manifest.db[i]]) x0=x[Manifest.db[i]];
+						if (y[Manifest.db[i]]) y0=y[Manifest.db[i]];
 						if ((x0==-1) && (y0==-1)) is_new=0;
 						if (y0>x0) is_new=1;
 					};
