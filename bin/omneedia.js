@@ -2596,8 +2596,8 @@ function Update_DB(cb)
 			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql','');
 			var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
 			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql',o.output);
-			var x=md5(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql');
-			__INF__[DBA[i]]=x;
+			if (!__INF__[DBA[i]]) __INF__[DBA[i]]=0;
+			__INF__[DBA[i]]++;
 			console.log('      Done.');
 		};/* else {
 			// Compare to the database
@@ -2622,7 +2622,7 @@ function Update_DB(cb)
 	};
 	fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json',JSON.stringify(__INF__));
 	fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json',JSON.stringify(__INF__));
-	cb();
+	if (cb) cb();
 };
 
 function App_Update(nn,cb)
@@ -2963,7 +2963,8 @@ function App_Update(nn,cb)
 var figlet = require('figlet');
 
 figlet(' omneedia', {
-    font: 'ANSI Shadow'
+    //font: 'ANSI Shadow',
+	font: "ogre"
 },function(err, art) {
 		if (err) {
 			var err='\n  !!! GURU MEDITATION !!! \n'+err;
@@ -3171,13 +3172,31 @@ figlet(' omneedia', {
 	{
 		if (argv.indexOf('db')>-1) {
 			console.log('  - Updating DB');
-			Update_DB(function() {
-				console.log('    Done.');
-			});
+			Update_DB();
+			console.log('    Done.');
 			return;
 		};
 		App_Update('-',function() {
-		
+			if (fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) 
+			var x=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
+			else
+			var x={};
+			if (fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) 
+			var y=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
+			else
+			var y={};
+			var is_new=-1;
+			if (manifest.db.length>0) {
+				for (var i=0;i<manifest.db.length;i++) {
+					var x0,y0=-1;
+					if (x[manifest.db[i]]) x0=x[manifest.db[i]];
+					if (y[manifest.db[i]]) y0=y[manifest.db[i]];
+					if ((x0==-1) && (y0==-1)) is_new=0;
+					if (y0>x0) is_new=1;
+				};
+			};
+			if (is_new==0) Update_DB();
+			
 			var md5=require('md5-file');
 			console.log('  - Checking remote project');
 			// test if content has changed
@@ -3199,6 +3218,7 @@ figlet(' omneedia', {
 			var REMOTE=shelljs.exec('git rev-parse @{u}',{silent: true}).output;
 			var BASE=shelljs.exec('git merge-base @ @{u}',{silent: true}).output;
 			if (LOCAL==REMOTE) {
+				// verify remote db
 				console.log('    Up-to-date.');
 			} else {
 				if (LOCAL==BASE) {
@@ -3207,28 +3227,57 @@ figlet(' omneedia', {
 					shelljs.exec('git config --global user.email '+Manifest.author.mail,{silent:true});			
 					shelljs.exec('git pull origin master',{silent:true});
 					// detect change beetween db.json
-					if (!fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) {
-						fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json','{"db":[],"files":[]}');						
-					};
-					if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) {
-						fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json','{"db":[],"files":[]}');
-					};
-					var x=md5(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
-					var y=md5(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
-					if (x!=y) {
+					if (fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) 
+					var x=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
+					else
+					var x={};
+					if (fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) 
+					var y=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
+					else
+					var y={};
+					var is_new=-1;
+					if (manifest.db.length>0) {
+						for (var i=0;i<manifest.db.length;i++) {
+							var x0,y0=-1;
+							if (x[manifest.db[i]]) x0=x[manifest.db[i]];
+							if (y[manifest.db[i]]) y0=y[manifest.db[i]];
+							if ((x0==-1) && (y0==-1)) is_new=0;
+							if (y0>x0) is_new=1;
+						};
+					};					
+					if (is_new==1) {
 						// Change detected !!!
-						var __INF__=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
 						var DBA=Manifest.db;
 						for (var i=0;i<DBA.length;i++) {
+							var o=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "use '+DBA[i]+'"',{silent: true});
+							if (o.output.indexOf('denied')>-1) {
+								var str='  ! Access denied ['+DBA[i]+'] Aborting';
+								console.log(str.yellow);
+								return;
+							};		
+							if (o.output.indexOf('1049')>-1) {
+								var str='    - Creating database ['+DBA[i]+']';
+								console.log(str);
+								shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "CREATE DATABASE '+DBA[i]+'"',{silent: true});
+								console.log('      Done.');
+							}
 							var fileme=PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql';
 							var o=shelljs.exec('mysqldiff "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root" "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'"',{silent: true});
 							console.log(o.output);
+							if (o.output!="") {
+								var str='    - Updating database ['+DBA[i]+']';
+								console.log(str);
+								var err=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "'+o.output+'"',{silent: true});
+								console.log(err);
+								console.log('      Done.');
+							}							
 						}
 					};
 					console.log('\n    Done.');
 				} else {
 					if (REMOTE==BASE) {
 						console.log('    -> Uploading project update');
+						Update_DB();
 						if (Manifest.git!="") {
 							process.chdir(PROJECT_HOME);
 							var text=shelljs.exec('git remote',{silent: true});
