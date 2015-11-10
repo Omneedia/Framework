@@ -3168,7 +3168,7 @@ figlet(' omneedia', {
 		return;		
 	};
 */
-	if (argv.indexOf('update')>-1)
+	function AppUpdate()
 	{
 		if (argv.indexOf('db')>-1) {
 			console.log('  - Updating DB');
@@ -3230,7 +3230,7 @@ figlet(' omneedia', {
 					};
                     fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json',JSON.stringify(x));
             };
-            console.log('\n');
+            //console.log('\n');
 			
 			var md5=require('md5-file');
 			console.log('  - Checking remote project');
@@ -3323,8 +3323,8 @@ figlet(' omneedia', {
 				console.log('\n    Done.');
 			} else {
 				if (REMOTE==BASE) {
-					console.log('    -> Uploading project update');
-					Update_DB();
+					console.log('    -> Uploading project');
+					//Update_DB();
 					shelljs.exec('git config --global core.autocrlf false',{silent: true});
 					shelljs.exec('git add --all',{silent: true});
 					var x=shelljs.exec('git log',{silent: true}).output;			
@@ -3347,6 +3347,8 @@ figlet(' omneedia', {
 			return;
 		});
 	};	
+	
+	if (argv.indexOf('update')>-1) AppUpdate();
 	
 	if (argv.indexOf('clean')>-1)
 	{
