@@ -3269,7 +3269,7 @@ figlet(' omneedia', {
 			};
 
 			if (LOCAL==BASE) {
-				console.log('    <- Downloading project update');
+				console.log('    <- Updating project');
 				shelljs.exec('git config --global user.name "'+Manifest.author.name+'"',{silent:true});
 				shelljs.exec('git config --global user.email '+Manifest.author.mail,{silent:true});			
 				shelljs.exec('git pull origin master',{silent:true});
@@ -3314,8 +3314,8 @@ figlet(' omneedia', {
 						if (o.output!="") {
 							var str='    - Updating database ['+DBA[i]+']';
 							console.log(str);
-							var err=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "'+o.output+'"',{silent: true});
-							console.log(err);
+							var err=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "use '+DBA[i]+';'+o.output.split('\n').join('')+'"',{silent: true});
+							//console.log(err);
 							console.log('      Done.');
 						}							
 					}
@@ -3323,7 +3323,7 @@ figlet(' omneedia', {
 				console.log('\n    Done.');
 			} else {
 				if (REMOTE==BASE) {
-					console.log('    -> Uploading project');
+					console.log('    -> Updating project');
 					//Update_DB();
 					shelljs.exec('git config --global core.autocrlf false',{silent: true});
 					shelljs.exec('git add --all',{silent: true});
