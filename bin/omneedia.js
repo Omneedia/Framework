@@ -3191,11 +3191,46 @@ figlet(' omneedia', {
 					var x0,y0=-1;
 					if (x[Manifest.db[i]]) x0=x[Manifest.db[i]];
 					if (y[Manifest.db[i]]) y0=y[Manifest.db[i]];
-					if ((x0==-1) && (y0==-1)) is_new=0;
-					if (y0>x0) is_new=1;
+                    if (!x0) x0=-1;
+                    if (!y0) y0=-1;
+                    if (is_new==-1) {
+                        if ((x0==-1) && (y0==-1)) is_new=0;
+                        if (y0>x0) is_new=1;                        
+                    }
 				};
 			};
-			if (is_new==0) Update_DB();
+			if (is_new>-1) {
+                    var str='    Checking databases';
+					console.log(str);
+                    // Change detected !!!
+					var DBA=Manifest.db;
+					for (var i=0;i<DBA.length;i++) {
+						var o=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "use '+DBA[i]+'"',{silent: true});
+						if (o.output.indexOf('denied')>-1) {
+							var str='  ! Access denied ['+DBA[i]+'] Aborting';
+							console.log(str.yellow);
+							return;
+						};		
+						if (o.output.indexOf('1049')>-1) {
+							var str='    - Creating database ['+DBA[i]+']';
+							console.log(str);
+							shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "CREATE DATABASE '+DBA[i]+'"',{silent: true});
+							console.log('      Done.');
+						}
+						var fileme=PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql';
+						var o=shelljs.exec('mysqldiff "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root" "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'"',{silent: true});
+						if (o.output!="") {
+							var str='    - Updating database ['+DBA[i]+']';
+							console.log(str);
+							var err=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "USE '+DBA[i]+';'+o.output.split('\n').join('')+'"',{silent: true});
+							//console.log(err);
+                            x[DBA[i]]=y[DBA[i]];
+							console.log('      Done.');
+						}							
+					};
+                    fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json',JSON.stringify(x));
+            };
+            console.log('\n');
 			
 			var md5=require('md5-file');
 			console.log('  - Checking remote project');
