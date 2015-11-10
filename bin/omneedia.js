@@ -2589,7 +2589,7 @@ function Update_DB(cb)
 		}
 	};
 	for (var i=0;i<DBA.length;i++) {
-		if (fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql')) fs.rmSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql');
+		if (fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql')) fs.unlinkSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql');
 		if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql')) {
 			var str='    - Dumping database ['+DBA[i]+']';
 			console.log(str);
@@ -3218,81 +3218,97 @@ figlet(' omneedia', {
 			var REMOTE=shelljs.exec('git rev-parse @{u}',{silent: true}).output;
 			var BASE=shelljs.exec('git merge-base @ @{u}',{silent: true}).output;
 			if (LOCAL==REMOTE) {
-				// verify remote db
-				console.log('    Up-to-date.');
-			} else {
-				if (LOCAL==BASE) {
-					console.log('    <- Downloading project update');
-					shelljs.exec('git config --global user.name "'+Manifest.author.name+'"',{silent:true});
-					shelljs.exec('git config --global user.email '+Manifest.author.mail,{silent:true});			
-					shelljs.exec('git pull origin master',{silent:true});
-					// detect change beetween db.json
-					if (fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) 
-					var x=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
-					else
-					var x={};
-					if (fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) 
-					var y=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
-					else
-					var y={};
-					var is_new=-1;
-					if (manifest.db.length>0) {
-						for (var i=0;i<manifest.db.length;i++) {
-							var x0,y0=-1;
-							if (x[manifest.db[i]]) x0=x[manifest.db[i]];
-							if (y[manifest.db[i]]) y0=y[manifest.db[i]];
-							if ((x0==-1) && (y0==-1)) is_new=0;
-							if (y0>x0) is_new=1;
-						};
-					};					
-					if (is_new==1) {
-						// Change detected !!!
-						var DBA=Manifest.db;
-						for (var i=0;i<DBA.length;i++) {
-							var o=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "use '+DBA[i]+'"',{silent: true});
-							if (o.output.indexOf('denied')>-1) {
-								var str='  ! Access denied ['+DBA[i]+'] Aborting';
-								console.log(str.yellow);
-								return;
-							};		
-							if (o.output.indexOf('1049')>-1) {
-								var str='    - Creating database ['+DBA[i]+']';
-								console.log(str);
-								shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "CREATE DATABASE '+DBA[i]+'"',{silent: true});
-								console.log('      Done.');
-							}
-							var fileme=PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql';
-							var o=shelljs.exec('mysqldiff "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root" "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'"',{silent: true});
-							console.log(o.output);
-							if (o.output!="") {
-								var str='    - Updating database ['+DBA[i]+']';
-								console.log(str);
-								var err=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "'+o.output+'"',{silent: true});
-								console.log(err);
-								console.log('      Done.');
-							}							
-						}
-					};
-					console.log('\n    Done.');
+				var err=shelljs.exec('git status',{silent: true});
+				if (err.output.indexOf('modified:')>-1) {
+					shelljs.exec('git config --global core.autocrlf false',{silent: true});
+					shelljs.exec('git add --all',{silent: true});
+					var x=shelljs.exec('git log',{silent: true}).output;			
+					shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});
+					var LOCAL=shelljs.exec('git rev-parse @',{silent: true}).output;
+					var REMOTE=shelljs.exec('git rev-parse @{u}',{silent: true}).output;
+					var BASE=shelljs.exec('git merge-base @ @{u}',{silent: true}).output;				
 				} else {
-					if (REMOTE==BASE) {
-						console.log('    -> Uploading project update');
-						Update_DB();
-						if (Manifest.git!="") {
-							process.chdir(PROJECT_HOME);
-							var text=shelljs.exec('git remote',{silent: true});
-							if (text.output.indexOf('origin')==-1) {
-								console.log('       - Adding remote origin');
-								shelljs.exec('git remote add origin '+Manifest.git,{silent:true});
-							};
-							shelljs.exec('git push -u origin master',{silent: true});
-							console.log('    Done.');
-						} else console.log("\n  ! There is no github url in manifest".yellow);
-					} else {
-						console.log("Can't update repository... #ERR69");
-					}
+					console.log('    Up-to-date.');
+					return;
 				}
-			}
+			};
+
+			if (LOCAL==BASE) {
+				console.log('    <- Downloading project update');
+				shelljs.exec('git config --global user.name "'+Manifest.author.name+'"',{silent:true});
+				shelljs.exec('git config --global user.email '+Manifest.author.mail,{silent:true});			
+				shelljs.exec('git pull origin master',{silent:true});
+				// detect change beetween db.json
+				if (fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) 
+				var x=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
+				else
+				var x={};
+				if (fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) 
+				var y=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
+				else
+				var y={};
+				var is_new=-1;
+				if (manifest.db.length>0) {
+					for (var i=0;i<manifest.db.length;i++) {
+						var x0,y0=-1;
+						if (x[manifest.db[i]]) x0=x[manifest.db[i]];
+						if (y[manifest.db[i]]) y0=y[manifest.db[i]];
+						if ((x0==-1) && (y0==-1)) is_new=0;
+						if (y0>x0) is_new=1;
+					};
+				};					
+				if (is_new==1) {
+					// Change detected !!!
+					var DBA=Manifest.db;
+					for (var i=0;i<DBA.length;i++) {
+						var o=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "use '+DBA[i]+'"',{silent: true});
+						if (o.output.indexOf('denied')>-1) {
+							var str='  ! Access denied ['+DBA[i]+'] Aborting';
+							console.log(str.yellow);
+							return;
+						};		
+						if (o.output.indexOf('1049')>-1) {
+							var str='    - Creating database ['+DBA[i]+']';
+							console.log(str);
+							shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "CREATE DATABASE '+DBA[i]+'"',{silent: true});
+							console.log('      Done.');
+						}
+						var fileme=PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql';
+						var o=shelljs.exec('mysqldiff "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root" "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'"',{silent: true});
+						console.log(o.output);
+						if (o.output!="") {
+							var str='    - Updating database ['+DBA[i]+']';
+							console.log(str);
+							var err=shelljs.exec('mysql -u root -h 127.0.0.1 -P 3306 -e "'+o.output+'"',{silent: true});
+							console.log(err);
+							console.log('      Done.');
+						}							
+					}
+				};
+				console.log('\n    Done.');
+			} else {
+				if (REMOTE==BASE) {
+					console.log('    -> Uploading project update');
+					Update_DB();
+					shelljs.exec('git config --global core.autocrlf false',{silent: true});
+					shelljs.exec('git add --all',{silent: true});
+					var x=shelljs.exec('git log',{silent: true}).output;			
+					shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});					
+					if (Manifest.git!="") {
+						process.chdir(PROJECT_HOME);
+						var text=shelljs.exec('git remote',{silent: true});
+						if (text.output.indexOf('origin')==-1) {
+							console.log('       - Adding remote origin');
+							shelljs.exec('git remote add origin '+Manifest.git,{silent:true});
+						};
+						shelljs.exec('git push -u origin master',{silent: true});
+						console.log('    Done.');
+					} else console.log("\n  ! There is no github url in manifest".yellow);
+				} else {
+					console.log("Can't update repository... #ERR69");
+				}
+			};
+
 			return;
 		});
 	};	
