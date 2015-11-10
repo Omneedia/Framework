@@ -2630,7 +2630,10 @@ function App_Update(nn,cb)
 	console.log('  - Updating project');
 	// reading manifest.json
 	var pcwd=process.cwd();
-	if (nn!="") pcwd+=path.sep+nn; else pcwd+=path.sep+argv[p+1];
+	if (nn=="-") pcwd+=path.sep+argv[p+1];
+	else {
+		if (nn!="") pcwd+=path.sep+nn; else pcwd+=path.sep+argv[p+1];
+	};
 
 	var p=argv.indexOf('create');
 	if (!fs.existsSync(PROJECT_HOME+path.sep+'app.manifest')) {
@@ -2657,15 +2660,16 @@ function App_Update(nn,cb)
 	// get api
 	if (fs.existsSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Services')) {
 		console.log('  - Updating API');
-		manifest.api=[];
+		if (!manifest.api) manifest.api=[];
 		var api_dir=fs.readdirSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Services');
 		for (var i=0;i<api_dir.length;i++) {
 			try {
 				var text=fs.readFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Services'+path.sep+api_dir[i],'utf-8');
 				var idx=text.indexOf('module.exports');
 				if (idx>-1) text=text.substr(idx,text.length).split('=')[1].trim().split(';')[0];
-				if (!manifest.api) manifest.api={};
-				if (text!="") manifest.api.push(text);
+				if (text!="") {
+					if (manifest.api.indexOf(text)==-1) manifest.api.push(text);
+				};
 			} catch(ex) {
 			
 			}
@@ -2938,13 +2942,15 @@ function App_Update(nn,cb)
 				shelljs.exec('git add --all',{silent: true});
 				shelljs.exec('git commit -m "First commit"',{silent: true});		
 			} else {
-				console.log('  - Updating local repository');
-				shelljs.exec('git config --global core.autocrlf false',{silent: true});
-				shelljs.exec('git add --all',{silent: true});
-				//shelljs.exec('git status');
-				var x=shelljs.exec('git log',{silent: true}).output;			
+				if (nn!='-') {
+					console.log('  - Updating local repository');
+					shelljs.exec('git config --global core.autocrlf false',{silent: true});
+					shelljs.exec('git add --all',{silent: true});
+					//shelljs.exec('git status');
+					var x=shelljs.exec('git log',{silent: true}).output;			
 
-				shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});
+					shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});
+				}
 			};
 			console.log('    Done.');
 			console.log('');
@@ -3170,73 +3176,76 @@ figlet(' omneedia', {
 			});
 			return;
 		};
-		var md5=require('md5-file');
-		console.log('  - Updating project');
-		// test if content has changed
-		var test0=shelljs.exec('git diff-index --name-only HEAD',{silent:true}).output.split('\n');
-		shelljs.exec('git add --all',{silent: true});
-		var test1=shelljs.exec('git diff-index --name-only HEAD',{silent:true}).output.split('\n');
-		shelljs.exec('git reset',{silent: true});
-		test0.pop();
-		test1.pop();
-		var diff=test1.diff(test0);
-		if (diff.length>0) {
-			shelljs.exec('git config --global core.autocrlf false',{silent: true});
+		App_Update('-',function() {
+		
+			var md5=require('md5-file');
+			console.log('  - Checking remote project');
+			// test if content has changed
+			var test0=shelljs.exec('git diff-index --name-only HEAD',{silent:true}).output.split('\n');
 			shelljs.exec('git add --all',{silent: true});
-			var x=shelljs.exec('git log',{silent: true}).output;			
-			shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});
-		};
-		shelljs.exec('git fetch',{silent: true});
-		var LOCAL=shelljs.exec('git rev-parse @',{silent: true}).output;
-		var REMOTE=shelljs.exec('git rev-parse @{u}',{silent: true}).output;
-		var BASE=shelljs.exec('git merge-base @ @{u}',{silent: true}).output;
-		if (LOCAL==REMOTE) {
-			console.log('    Up-to-date.');
-		} else {
-			if (LOCAL==BASE) {
-				console.log('    <- Downloading project update');
-				shelljs.exec('git config --global user.name "'+Manifest.author.name+'"',{silent:true});
-				shelljs.exec('git config --global user.email '+Manifest.author.mail,{silent:true});			
-				shelljs.exec('git pull origin master',{silent:true});
-				// detect change beetween db.json
-				if (!fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) {
-					fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json','{"db":[],"files":[]}');						
-				};
-				if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) {
-					fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json','{"db":[],"files":[]}');
-				};
-				var x=md5(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
-				var y=md5(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
-				if (x!=y) {
-					// Change detected !!!
-					var __INF__=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
-					var DBA=Manifest.db;
-					for (var i=0;i<DBA.length;i++) {
-						var fileme=PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql';
-						var o=shelljs.exec('mysqldiff "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root" "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'"',{silent: true});
-						console.log(o.output);
-					}
-				};
-				console.log('\n    Done.');
+			var test1=shelljs.exec('git diff-index --name-only HEAD',{silent:true}).output.split('\n');
+			shelljs.exec('git reset',{silent: true});
+			test0.pop();
+			test1.pop();
+			var diff=test1.diff(test0);
+			if (diff.length>0) {
+				shelljs.exec('git config --global core.autocrlf false',{silent: true});
+				shelljs.exec('git add --all',{silent: true});
+				var x=shelljs.exec('git log',{silent: true}).output;			
+				shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});
+			};
+			shelljs.exec('git fetch',{silent: true});
+			var LOCAL=shelljs.exec('git rev-parse @',{silent: true}).output;
+			var REMOTE=shelljs.exec('git rev-parse @{u}',{silent: true}).output;
+			var BASE=shelljs.exec('git merge-base @ @{u}',{silent: true}).output;
+			if (LOCAL==REMOTE) {
+				console.log('    Up-to-date.');
 			} else {
-				if (REMOTE==BASE) {
-					console.log('    -> Uploading project update');
-					if (Manifest.git!="") {
-						process.chdir(PROJECT_HOME);
-						var text=shelljs.exec('git remote',{silent: true});
-						if (text.output.indexOf('origin')==-1) {
-							console.log('       - Adding remote origin');
-							shelljs.exec('git remote add origin '+Manifest.git,{silent:true});
-						};
-						shelljs.exec('git push -u origin master',{silent: true});
-						console.log('    Done.');
-					} else console.log("\n  ! There is no github url in manifest".yellow);
+				if (LOCAL==BASE) {
+					console.log('    <- Downloading project update');
+					shelljs.exec('git config --global user.name "'+Manifest.author.name+'"',{silent:true});
+					shelljs.exec('git config --global user.email '+Manifest.author.mail,{silent:true});			
+					shelljs.exec('git pull origin master',{silent:true});
+					// detect change beetween db.json
+					if (!fs.existsSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json')) {
+						fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json','{"db":[],"files":[]}');						
+					};
+					if (!fs.existsSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json')) {
+						fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json','{"db":[],"files":[]}');
+					};
+					var x=md5(fs.readFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json'));
+					var y=md5(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
+					if (x!=y) {
+						// Change detected !!!
+						var __INF__=JSON.parse(fs.readFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json'));
+						var DBA=Manifest.db;
+						for (var i=0;i<DBA.length;i++) {
+							var fileme=PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql';
+							var o=shelljs.exec('mysqldiff "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root" "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'"',{silent: true});
+							console.log(o.output);
+						}
+					};
+					console.log('\n    Done.');
 				} else {
-					console.log("Can't update repository... #ERR69");
+					if (REMOTE==BASE) {
+						console.log('    -> Uploading project update');
+						if (Manifest.git!="") {
+							process.chdir(PROJECT_HOME);
+							var text=shelljs.exec('git remote',{silent: true});
+							if (text.output.indexOf('origin')==-1) {
+								console.log('       - Adding remote origin');
+								shelljs.exec('git remote add origin '+Manifest.git,{silent:true});
+							};
+							shelljs.exec('git push -u origin master',{silent: true});
+							console.log('    Done.');
+						} else console.log("\n  ! There is no github url in manifest".yellow);
+					} else {
+						console.log("Can't update repository... #ERR69");
+					}
 				}
 			}
-		}
-		return;
+			return;
+		});
 	};	
 	
 	if (argv.indexOf('clean')>-1)
