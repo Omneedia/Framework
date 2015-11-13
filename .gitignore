@@ -31,6 +31,7 @@ bin/mysql
 bin/brackets
 bin/android-sdk
 bin/cmd
+bin/MySQLWorkbench
 bin/cordova-js
 bin/jdk
 bin/uploads

@@ -18,6 +18,22 @@ Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) < 0;});
 };
 
+function mkdir(path, root) {
+
+    var dirs = path.split('/'), dir = dirs.shift(), root = (root || '') + dir + '/';
+
+    try { fs.mkdirSync(root); }
+    catch (e) {
+        //dir wasn't made, something went wrong
+        if(!fs.statSync(root).isDirectory()) throw new Error(e);
+    }
+
+    return !dirs.length || mkdir(dirs.join('/'), root);
+};
+
+String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+};
 
 if (process.argv.indexOf('--builder')>-1) {
 	if (process.platform=="linux") {
@@ -684,7 +700,7 @@ function make_resources(cb)
 		GRAPHICS[GRAPHICS.length]='"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -bordercolor white -border 0 -resize x16 -gravity center -background transparent -flatten -colors 256 "'+PROJECT_WEB+path.sep+'Contents'+path.sep+'Resources'+path.sep+'favicon.ico"';
 		if (!fs.existsSync(PROJECT_WEB+path.sep+'Contents'+path.sep+'Resources'+path.sep+'startup')) fs.mkdirSync(PROJECT_WEB+path.sep+'Contents'+path.sep+'Resources'+path.sep+'startup');
 		GRAPHICS[GRAPHICS.length]='"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.splashscreen.file+'" -resize 256x256 "'+PROJECT_WEB+path.sep+'Contents'+path.sep+'Resources'+path.sep+'startup'+path.sep+'logo.png"';
-//		GRAPHICS[GRAPHICS.length]='"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -resize x16 "'+PROJECT_WEB+path.sep+'Contents'+path.sep+'Resources'+path.sep+'webapp'+path.sep+'ico.png"';
+		GRAPHICS[GRAPHICS.length]='"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -resize x16 "'+PROJECT_WEB+path.sep+'Contents'+path.sep+'Resources'+path.sep+'webapp'+path.sep+'ico.png"';
 		var linkme=false;
 		async.map(GRAPHICS,convert,function(err,result) {
 			cb();
@@ -2589,7 +2605,8 @@ function AppUpdate(zzz)
 				}
 			};
 		};
-		if (is_new>-1) {
+
+		if (is_new>0) {
 				var str='    Checking databases';
 				console.log(str);
 				// Change detected !!!
@@ -3148,6 +3165,7 @@ figlet(' omneedia', {
     //font: 'ANSI Shadow',
 	font: "ogre"
 },function(err, art) {
+
 		if (err) {
 			var err='\n  !!! GURU MEDITATION !!! \n'+err;
 			console.log(err.red);
@@ -3259,7 +3277,50 @@ figlet(' omneedia', {
 	// Create interface
 	if (argv.indexOf('create')>-1)
 	{
+		// create a view
+		if (argv.indexOf('view')>-1) {
+			var p=argv.indexOf('view');
+			var name=argv[p+1];
+			if (!name) {
+				console.log('');
+				console.log('  ! To create a view: \n    oa create view MyView --type window\n    Create a view called MyView of type window'.yellow);
+				console.log('\n    oa create view MyView --type xxx\n    Create a view called MyView of type xxx'.yellow);
+				console.log('');
+				return;			
+			};
+			if (argv.indexOf('--type')==-1) var type="panel"; else {
+				var p=argv.indexOf('--type');
+				var type=argv[p+1];			
+			};
+			if (!fs.existsSync(__dirname+require('path').sep+"tpl"+require('path').sep+'view'+require('path').sep+type+".js")) {
+				var str='  ! type '+type+' not found!';
+				console.log(str.yellow);
+				return;
+			} else type=fs.readFileSync(__dirname+require('path').sep+"tpl"+require('path').sep+'view'+require('path').sep+type+".js",'utf-8');
+			var _path=PROJECT_HOME+require('path').sep+'src'+require('path').sep+'Contents'+require('path').sep+'Application'+require('path').sep+'app'+require('path').sep+'view';
+			_path+=require('path').sep+name.replace('.',require('path').sep)+'.js';
+			var dir=require('path').dirname(_path);
+			mkdir(dir);
+			type=type.replace('$namespace',name);			
+			var sname="";
+			for (var k=0;k<name.split('.').length;k++) {
+				sname+=name.split('.')[k].capitalizeFirstLetter();
+			};
+			type=type.replace('$name',sname);
+			fs.writeFileSync(_path,type);
+			var str='   - View '+name+' created.';
+			console.log(str.cyan);
+			return;
+		};
+		
 		var p=argv.indexOf('create');
+		if (!argv[p+1]) {
+			console.log('');
+			console.log('  ! project namespace must be like com.example.demo'.yellow);
+			console.log('');
+			return;
+		};
+		
 		console.log('  - Create package '+argv[p+1]);
 		PROJECT_HOME=process.cwd();
 		
@@ -3352,7 +3413,7 @@ figlet(' omneedia', {
 */
 
 	if (argv.indexOf('update')>-1) AppUpdate();
-	
+		
 	if (argv.indexOf('clean')>-1)
 	{
 		if (require('fs').existsSync(PROJECT_HOME+path.sep+'bin')) glob.rmdirSyncRecursive(PROJECT_HOME+path.sep+'bin');
