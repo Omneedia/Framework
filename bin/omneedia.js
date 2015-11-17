@@ -5,7 +5,7 @@
  *
  */
 
-$_VERSION = "0.9.3";
+$_VERSION = "0.9.4";
 
 CDN = "http://omneedia.github.io/cdn"; //PROD
 //CDN = "/cdn"; // DEBUG
@@ -2792,35 +2792,32 @@ function Update_DB(cb)
 			var str='    - Dumping database ['+DBA[i]+']';
 			console.log(str);
 			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql','');
-			var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
+			var o=shelljs.exec('mysqldump -h 127.0.0.1 -P 3306 -uroot -d '+DBA[i]).output;
+			/*var o=o.split(';');
+			for (var k=0;k<o.length;k++) {
+				if (o[k].indexOf('COMMENT=')>-1) {
+					o[k]=o[k].substr(0,o[k].indexOf('COMMENT='));
+				};
+				if (o[k].indexOf(',')>-1) {
+					var ok=o[k].split(',');
+					console.log(ok);
+				};
+			};*/
+			//console.log(o);
+			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql',o);
+			if (!__INF__[DBA[i]]) __INF__[DBA[i]]=0;
+			__INF__[DBA[i]]++;
+			console.log('      Done.');			
+			/*var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
 			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql',o.output);
 			if (!__INF__[DBA[i]]) __INF__[DBA[i]]=0;
 			__INF__[DBA[i]]++;
-			console.log('      Done.');
-		};/* else {
-			// Compare to the database
-			var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
-			var date = new Date();
-			var year = date.getFullYear();
-			var month = date.getMonth() + 1;
-			month = (month < 10 ? "0" : "") + month;
-			var day  = date.getDate();
-			day = (day < 10 ? "0" : "") + day;			
-			if (o.output!="") {
-				var str='    - Patching database ['+DBA[i]+']';
-				console.log(str);
-				fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.patch-'+year+'-'+month+'-'+day+'.sql',o.output);
-				var x=md5(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.patch-'+year+'-'+month+'-'+day+'.sql');
-				if (!__INF__.db[DBA[i]]) __INF__.db[DBA[i]]=[];
-				__INF__.db[DBA[i]].push(x);
-				__INF__.files[x]=DBA[i]+'.patch-'+year+'-'+month+'-'+day+'.sql';
-				console.log('      Done.');			
-			}
-		}*/
+			console.log('      Done.');*/
+		};
 	};
-	fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json',JSON.stringify(__INF__));
-	fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json',JSON.stringify(__INF__));
-	if (cb) cb();
+	//fs.writeFileSync(PROJECT_HOME+require('path').sep+'etc'+require('path').sep+'db.json',JSON.stringify(__INF__));
+	//fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+'db.json',JSON.stringify(__INF__));
+	//if (cb) cb();
 };
 
 function App_Update(nn,cb)
