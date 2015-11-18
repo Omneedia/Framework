@@ -1125,7 +1125,7 @@ function convert(cmd,callback)
     ocmd[0]=ocmd[0].split('"')[1];
     ocmd[ocmd.length-1]=ocmd[ocmd.length-1].split('"')[1];
     var im=require('imagemagick');
-    im.convert(ocmd,callback);    
+    im.convert(ocmd,callback);
 };
 
 var loadBase64Image = function (url, callback) {

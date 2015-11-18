@@ -13,7 +13,7 @@
 @SET ALLUSERSPROFILE=%CURRENT_BIN%.appdata
 @SET PLINK_PROTOCOL=ssh
 @IF NOT DEFINED TERM SET TERM=msys
-@SET PATH=%CURRENT_BIN%\cmd\5.1.3.61;%JAVA_HOME%\bin;%ANDROID_HOME%platform-tools;%ANDROID_HOME%build-tools\%ANDROID_BUILD_VERSION%;%ANDROID_HOME%tools;%CURRENT_BIN%;%CURRENT_BIN%git;%CURRENT_BIN%git\bin;%CURRENT_BIN%git\libexec\git-core;%CURRENT_BIN%npm;%CURRENT_BIN%ant\bin;%CURRENT_BIN%node_modules\.bin;%CURRENT_BIN%git\bin;%CURRENT_BIN%git\cmd;%CURRENT_BIN%editor;%CURRENT_BIN%chrome;%CURRENT_BIN%mysql\bin;%PATH%;
+@SET PATH=%CURRENT_BIN%\im;%CURRENT_BIN%\cmd\5.1.3.61;%JAVA_HOME%\bin;%ANDROID_HOME%platform-tools;%ANDROID_HOME%build-tools\%ANDROID_BUILD_VERSION%;%ANDROID_HOME%tools;%CURRENT_BIN%;%CURRENT_BIN%git;%CURRENT_BIN%git\bin;%CURRENT_BIN%git\libexec\git-core;%CURRENT_BIN%npm;%CURRENT_BIN%ant\bin;%CURRENT_BIN%node_modules\.bin;%CURRENT_BIN%git\bin;%CURRENT_BIN%git\cmd;%CURRENT_BIN%editor;%CURRENT_BIN%chrome;%CURRENT_BIN%mysql\bin;%PATH%;
 @set HOMEDRIVE=%~d0
 @set HOMEPATH=%~p0bin\git\bin
 @if not exist "%HOME%" @set HOME=%HOMEDRIVE%%HOMEPATH%
