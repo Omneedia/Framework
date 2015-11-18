@@ -1,25 +1,25 @@
-2015-11-06 09:58:31 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
-2015-11-06 09:58:31 0 [Note] /Users/zucatti/omneedia_dev/bin/mysql/bin/mysqld (mysqld 5.6.27) starting as process 21825 ...
-2015-11-06 09:58:31 21825 [Warning] Setting lower_case_table_names=2 because file system for /Users/zucatti/omneedia_dev/bin/mysql/data/ is case insensitive
-2015-11-06 09:58:31 21825 [Note] Plugin 'FEDERATED' is disabled.
-2015-11-06 09:58:31 21825 [Warning] option 'innodb-force-recovery': unsigned value 16 adjusted to 6
+2015-11-18 08:40:41 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
+2015-11-18 08:40:41 0 [Note] /Users/zucatti/omneedia_dev/bin/mysql/bin/mysqld (mysqld 5.6.27) starting as process 15450 ...
+2015-11-18 08:40:41 15450 [Warning] Setting lower_case_table_names=2 because file system for /Users/zucatti/omneedia_dev/bin/mysql/data/ is case insensitive
+2015-11-18 08:40:41 15450 [Note] Plugin 'FEDERATED' is disabled.
+2015-11-18 08:40:41 15450 [Warning] option 'innodb-force-recovery': unsigned value 16 adjusted to 6
 /Users/zucatti/omneedia_dev/bin/mysql/bin/mysqld: Table 'mysql.plugin' doesn't exist
-2015-11-06 09:58:31 21825 [ERROR] Can't open the mysql.plugin table. Please run mysql_upgrade to create it.
-2015-11-06 09:58:31 21825 [Note] InnoDB: Using atomics to ref count buffer pool pages
-2015-11-06 09:58:31 21825 [Note] InnoDB: The InnoDB memory heap is disabled
-2015-11-06 09:58:31 21825 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
-2015-11-06 09:58:31 21825 [Note] InnoDB: Memory barrier is not used
-2015-11-06 09:58:31 21825 [Note] InnoDB: Compressed tables use zlib 1.2.3
-2015-11-06 09:58:31 21825 [Note] InnoDB: Using CPU crc32 instructions
-2015-11-06 09:58:31 21825 [Note] InnoDB: Initializing buffer pool, size = 128.0M
-2015-11-06 09:58:31 21825 [Note] InnoDB: Completed initialization of buffer pool
-2015-11-06 09:58:31 21825 [Note] InnoDB: Highest supported file format is Barracuda.
-2015-11-06 09:58:31 21825 [Note] InnoDB: The user has set SRV_FORCE_NO_LOG_REDO on, skipping log redo
-2015-11-06 09:58:31 21825 [Note] InnoDB: 128 rollback segment(s) are active.
-2015-11-06 09:58:31 21825 [Note] InnoDB: 5.6.27 started; log sequence number 0
-2015-11-06 09:58:31 21825 [Note] InnoDB: !!! innodb_force_recovery is set to 6 !!!
-2015-11-06 09:58:31 21825 [Note] Server hostname (bind-address): '*'; port: 5123
-2015-11-06 09:58:31 21825 [Note] IPv6 is available.
-2015-11-06 09:58:31 21825 [Note]   - '::' resolves to '::';
-2015-11-06 09:58:31 21825 [Note] Server socket created on IP: '::'.
-2015-11-06 09:58:31 21825 [ERROR] Fatal error: Can't open and lock privilege tables: Table 'mysql.user' doesn't exist
+2015-11-18 08:40:41 15450 [ERROR] Can't open the mysql.plugin table. Please run mysql_upgrade to create it.
+2015-11-18 08:40:41 15450 [Note] InnoDB: Using atomics to ref count buffer pool pages
+2015-11-18 08:40:41 15450 [Note] InnoDB: The InnoDB memory heap is disabled
+2015-11-18 08:40:41 15450 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
+2015-11-18 08:40:41 15450 [Note] InnoDB: Memory barrier is not used
+2015-11-18 08:40:41 15450 [Note] InnoDB: Compressed tables use zlib 1.2.3
+2015-11-18 08:40:41 15450 [Note] InnoDB: Using CPU crc32 instructions
+2015-11-18 08:40:41 15450 [Note] InnoDB: Initializing buffer pool, size = 128.0M
+2015-11-18 08:40:41 15450 [Note] InnoDB: Completed initialization of buffer pool
+2015-11-18 08:40:41 15450 [Note] InnoDB: Highest supported file format is Barracuda.
+2015-11-18 08:40:41 15450 [Note] InnoDB: The user has set SRV_FORCE_NO_LOG_REDO on, skipping log redo
+2015-11-18 08:40:41 15450 [Note] InnoDB: 128 rollback segment(s) are active.
+2015-11-18 08:40:41 15450 [Note] InnoDB: 5.6.27 started; log sequence number 0
+2015-11-18 08:40:41 15450 [Note] InnoDB: !!! innodb_force_recovery is set to 6 !!!
+2015-11-18 08:40:41 15450 [Note] Server hostname (bind-address): '*'; port: 5123
+2015-11-18 08:40:41 15450 [Note] IPv6 is available.
+2015-11-18 08:40:41 15450 [Note]   - '::' resolves to '::';
+2015-11-18 08:40:41 15450 [Note] Server socket created on IP: '::'.
+2015-11-18 08:40:41 15450 [ERROR] Fatal error: Can't open and lock privilege tables: Table 'mysql.user' doesn't exist

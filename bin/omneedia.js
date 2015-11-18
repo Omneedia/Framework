@@ -7,8 +7,8 @@
 
 $_VERSION = "0.9.4";
 
-//CDN = "http://omneedia.github.io/cdn"; //PROD
-CDN = "/cdn"; // DEBUG
+CDN = "http://omneedia.github.io/cdn"; //PROD
+//CDN = "/cdn"; // DEBUG
 
 var fs=require('fs');
 var path=require('path');
@@ -1120,18 +1120,12 @@ function b64(f)
 
 function convert(cmd,callback)
 {
-	if (os.platform()=="win32")
-	{
-		fs.writeFileSync("convert.cmd",cmd);
-		Exec(fs.readFileSync("convert.cmd","utf-8"), function (error, stdout, stderr) {
-			if (fs.existsSync("convert.cmd")) fs.unlinkSync("convert.cmd");
-			callback(null,stdout);
-		});
-	} else {
-		Exec(cmd, function (error, stdout, stderr) {
-			callback(null,stdout);
-		});
-	}
+    var ocmd=cmd.split(' ');
+    ocmd.shift();
+    ocmd[0]=ocmd[0].split('"')[1];
+    ocmd[ocmd.length-1]=ocmd[ocmd.length-1].split('"')[1];
+    var im=require('imagemagick');
+    im.convert(ocmd,callback);    
 };
 
 var loadBase64Image = function (url, callback) {
