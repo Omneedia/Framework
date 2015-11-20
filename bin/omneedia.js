@@ -7,8 +7,8 @@
 
 $_VERSION = "0.9.4";
 
-//CDN = "http://omneedia.github.io/cdn"; //PROD
-CDN = "/cdn"; // DEBUG
+CDN = "http://omneedia.github.io/cdn"; //PROD
+//CDN = "/cdn"; // DEBUG
 
 var fs=require('fs');
 var path=require('path');
@@ -3035,6 +3035,8 @@ function App_Update(nn,cb)
 			Settings.VERSION=manifest.version;
 			Settings.BUILD=manifest.build;
 			Settings.CDN=CDN;
+			
+			if (manifest.blur) Settings.blur=manifest.blur; else Settings.blur=1;
 			
 			fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Settings.js','Settings='+JSON.stringify(Settings));		
 			var ndx=fs.readFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'index.html','utf-8');
