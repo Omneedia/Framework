@@ -7,8 +7,8 @@
 
 $_VERSION = "0.9.4";
 
-CDN = "http://omneedia.github.io/cdn"; //PROD
-//CDN = "/cdn"; // DEBUG
+//CDN = "http://omneedia.github.io/cdn"; //PROD
+CDN = "/cdn"; // DEBUG
 
 var fs=require('fs');
 var path=require('path');

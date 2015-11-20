@@ -77,6 +77,16 @@ __QUERY__ = {
 			}
 		};
 		function querycommander(o) {
+			function cleanArray(array) {
+			  var i, j, len = array.length, out = [], obj = {};
+			  for (i = 0; i < len; i++) {
+				obj[array[i]] = 0;
+			  }
+			  for (j in obj) {
+				out.push(j);
+			  }
+			  return out;
+			};
 			function getFields(fields,table) {
 				for (var i=0;i<fields.length;i++) {
 					var temoin=0;
@@ -219,7 +229,7 @@ __QUERY__ = {
 				
 				// detection du query
 				if (cmd.indexOf('?')==-1) SQL.push('-1'); else {
-					var query=cmd.split('?')[1].split('&');
+					var query=cleanArray(cmd.split('?')[1].split('&'));
 					for (var i=0;i<query.length;i++)
 					{
 						if (query[i].indexOf('(')==-1) {
