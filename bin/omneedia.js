@@ -1966,8 +1966,8 @@ function get_mysql_tables(db,res,response) {
 				};
 			};
 		};
-		if (!fs.existsSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Db")) fs.mkdirSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Db");
-		if (!fs.existsSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Db"+path.sep+response.db+".scheme")) fs.writeFileSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Db"+path.sep+response.db+".scheme",JSON.stringify(response,null,4));
+		//if (!fs.existsSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Db")) fs.mkdirSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Db");
+		//if (!fs.existsSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Db"+path.sep+response.db+".scheme")) fs.writeFileSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Db"+path.sep+response.db+".scheme",JSON.stringify(response,null,4));
 		res.end(JSON.stringify(response,null,4));
 	});	
 	connection.end();
@@ -2749,6 +2749,33 @@ function AppUpdate(zzz)
 	});
 };	
 
+function explore_dbscheme(o)
+{
+	var lines=o.split(';');
+	var _tables=[];
+	var table=[];
+	var db={};
+	for (var i=0;i<lines.length;i++) {
+		if (lines[i].indexOf('CREATE TABLE')>-1) _tables.push(lines[i]);
+	};
+	for (var i=0;i<_tables.length;i++) {
+		var t=_tables[i];
+		var _fields=t.split('CREATE TABLE ')[1].split(') ENGINE=')[0];
+		var pos=_fields.indexOf('(');
+		table=_fields.substr(0,pos-1).split('`')[1];
+		_fields=_fields.substr(pos+1,_fields.length);
+		console.log('['+table+']');
+		var fields=[];
+		var _fields=_fields.replace(/(?:\\[rn]|[\r\n]+)+/g, "").split(',');
+		for (var j=0;j<_fields.length;j++) {
+			if ((_fields[j].indexOf('PRIMARY')==-1) && (_fields[j].indexOf('CONSTRAINT')==-1)) fields.push(_fields[j].trim());
+		};
+		console.log(fields);
+	};
+	//console.log(tables);
+	return;
+}
+
 function Update_DB(cb)
 {
 	var DBA=Manifest.db;
@@ -2786,22 +2813,13 @@ function Update_DB(cb)
 			var str='    - Dumping database ['+DBA[i]+']';
 			console.log(str);
 			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql','');
-			var o=shelljs.exec('mysqldump -h 127.0.0.1 -P 3306 -uroot -d '+DBA[i]).output;
-			/*var o=o.split(';');
-			for (var k=0;k<o.length;k++) {
-				if (o[k].indexOf('COMMENT=')>-1) {
-					o[k]=o[k].substr(0,o[k].indexOf('COMMENT='));
-				};
-				if (o[k].indexOf(',')>-1) {
-					var ok=o[k].split(',');
-					console.log(ok);
-				};
-			};*/
-			//console.log(o);
-			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql',o);
+			var o=shelljs.exec('mysqldump --skip-comments -h 127.0.0.1 -P 3306 -uroot -d '+DBA[i],{silent: true}).output;
+			//fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql',o);
+			explore_dbscheme(o);
 			if (!__INF__[DBA[i]]) __INF__[DBA[i]]=0;
 			__INF__[DBA[i]]++;
 			console.log('      Done.');			
+			return;
 			/*var o=shelljs.exec('mysqldiff "'+PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql'+'" "jdbc:mysql://127.0.0.1:3306/'+DBA[i]+'?user=root"',{silent: true});
 			fs.writeFileSync(PROJECT_HOME+require('path').sep+'db'+require('path').sep+DBA[i]+'.scheme.sql',o.output);
 			if (!__INF__[DBA[i]]) __INF__[DBA[i]]=0;
