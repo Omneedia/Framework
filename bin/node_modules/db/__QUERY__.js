@@ -12,71 +12,13 @@ __QUERY__ = {
 		var err=null;
 		var response=null;
 		var SQL=[];
-		function qstr(str) {
-			//if (typeof str === 'object') return "";
-			if (str=="null") return "NULL";
-			try {
-				var obj='\''+str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
-					switch (char) {
-						case "\0":
-							return "\\0";
-						case "\x08":
-							return "\\b";
-						case "\x09":
-							return "\\t";
-						case "\x1a":
-							return "\\z";
-						case "\n":
-							return "\\n";
-						case "\r":
-							return "\\r";
-						case "%":
-							return "%";
-						case "\"":
-						case "'":
-						case "\\":
-							return "\\"+char; // prepends a backslash to backslash, percent,
-											  // and double/single quotes
-					}
-				})+'\'';
-			} catch(e) {
-				return '\''+str+'\'';
-			};
-			return obj;
-		};
 		
-		function query_fields(q) {
-			if (q.indexOf('=')>-1) {
-				// =
-				if (q.split('=')[1].indexOf('*')>-1) {
-					// like
-					if (q.indexOf('!=')>-1) {
-						SQL.push(q.split('!=')[0]+' not like "'+q.split('=')[1].replace(/\*/g,'%')+'"');
-					} else {
-						SQL.push(q.split('=')[0]+' like "'+q.split('=')[1].replace(/\*/g,'%')+'"');
-					};
-					if (q.indexOf('!=')>-1) var _like='not like'; else _like='like';
+		function querycommander(o,cb) {
 					
-				} else {
-					if (q.split('=')[1].indexOf('[')>-1) {
-						//in
-						if (q.indexOf('!=')>-1) {
-							SQL.push(q.split('!=')[0]+' not in ('+q.split('=')[1].split('[')[1].split(']')[0]+')');
-						} else {
-							SQL.push(q.split('=')[0]+' in ('+q.split('=')[1].split('[')[1].split(']')[0]+')');
-						};						
-					} else {
-						// cas d'une fonction
-						if (q.indexOf('(')>-1)
-						SQL.push(q.split('=')[0]+'='+q.split('=')[1]+'');
-						else {
-							SQL.push(q.split('=')[0]+'='+qstr(q.split('=')[1]));
-						}
-					}
-				}
-			}
-		};
-		function querycommander(o) {
+			/*
+			 * Private functions
+			 * Queries
+			 */
 			function cleanArray(array) {
 			  var i, j, len = array.length, out = [], obj = {};
 			  for (i = 0; i < len; i++) {
@@ -87,89 +29,231 @@ __QUERY__ = {
 			  }
 			  return out;
 			};
-			function getFields(fields,table) {
-				for (var i=0;i<fields.length;i++) {
-					var temoin=0;
-					var item=fields[i];
-					if (table) item=table+'.'+item;
-					if (fields[i].indexOf('->')>-1) {
-						temoin=1;
-						var fld=fields[i].split('->')[0];
-						var content=fields[i].split('->')[1];
-						var tbl=content.split('{')[0];
-						RELATION[tbl]=fld;
-						if (content.split('{').length>0) {
-							var flds=content.split('{')[1].split('}')[0].split(',');
-							getFields(flds,tbl);
+			function qstr(str) {
+				//if (typeof str === 'object') return "";
+				if (str=="null") return "NULL";
+				try {
+					var obj='\''+str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+						switch (char) {
+							case "\0":
+								return "\\0";
+							case "\x08":
+								return "\\b";
+							case "\x09":
+								return "\\t";
+							case "\x1a":
+								return "\\z";
+							case "\n":
+								return "\\n";
+							case "\r":
+								return "\\r";
+							case "%":
+								return "%";
+							case "\"":
+							case "'":
+							case "\\":
+								return "\\"+char; // prepends a backslash to backslash, percent,
+												  // and double/single quotes
 						}
-					};
-					try {
-						if (fields[i].indexOf('=')==-1) 
-						{
-							if ((fields[i].indexOf('+')>-1) && (fields[i].indexOf('->')==-1)) {
-								ORDERBY.push(item);
-								item=item.replace('+','');
-							};
-							if ((fields[i].indexOf('-')>-1) && (fields[i].indexOf('->')==-1)) {
-								ORDERBY.push(item+' DESC');
-								item=item.replace('-','');
-							};
-						}
-						else {
-							var fld=item.split('=')[0];
-							var fldvalue=item.split('=')[1];
-							if (fld.split('+').length>0) {
-								// concat
-								if (fldvalue.indexOf('+')>-1) {
-									fldvalue=fldvalue.split('+')[0];
-									ORDERBY.push(fldvalue);
-								};
-								if (fldvalue.indexOf('-')>-1) {
-									fldvalue=fldvalue.split('-')[0];
-									ORDERBY.push(fldvalue+' DESC');
-								};
-								item="CONCAT("+fld.split('+').join(',')+") "+fldvalue;
-							} else {
-								item=fld+' '+fldvalue;
-							}							
-						};
-					} catch(e) {
-					
-					}
-					if (temoin==0) FIELDS.push(item);
+					})+'\'';
+				} catch(e) {
+					return '\''+str+'\'';
 				};
+				return obj;
+			};	
+			function query_fields(q) {
+				if (q.indexOf('=')>-1) {
+					// =
+					if (q.split('=')[1].indexOf('*')>-1) {
+						// like
+						if (q.indexOf('!=')>-1) {
+							SQL.push(q.split('!=')[0]+' not like "'+q.split('=')[1].replace(/\*/g,'%')+'"');
+						} else {
+							SQL.push(q.split('=')[0]+' like "'+q.split('=')[1].replace(/\*/g,'%')+'"');
+						};
+						if (q.indexOf('!=')>-1) var _like='not like'; else _like='like';
+						
+					} else {
+						if (q.split('=')[1].indexOf('[')>-1) {
+							//in
+							if (q.indexOf('!=')>-1) {
+								SQL.push(q.split('!=')[0]+' not in ('+q.split('=')[1].split('[')[1].split(']')[0]+')');
+							} else {
+								SQL.push(q.split('=')[0]+' in ('+q.split('=')[1].split('[')[1].split(']')[0]+')');
+							};						
+						} else {
+							// cas d'une fonction
+							if (q.indexOf('(')>-1)
+							SQL.push(q.split('=')[0]+'='+q.split('=')[1]+'');
+							else {
+								SQL.push(q.split('=')[0]+'='+qstr(q.split('=')[1]));
+							}
+						}
+					}
+				}
 			};
-			function getNDX(arr,i,cb) {
-				var tb=arr[i];
-				if (!tb) cb(); else	db.getIndex(_db,tb,function(z) {
-					if (RELATION[tb])
-					JOINS.push('LEFT JOIN '+tb+' ON '+tb+'.'+z+'='+table+'.'+RELATION[tb]);
-					else
-					JOINS.push('LEFT JOIN '+tb+' ON '+tb+'.'+z+'='+table+'.'+z);
-					if (i<arr.length) getNDX(arr,i+1,cb); else cb();
-				});
+			/*
+			 * Private functions
+			 * Fields
+			 */
+			function compute_item(item,table)
+			{
+				var ITEM="";
+				if (item.split('.')[0].indexOf('->')>-1) {
+					ITEM=item.split('->')[1];
+					RELATION[item.split('.')[0].split('->')[1]]=table+'.'+item.split('->')[0];
+					TABLES.push(item.split('.')[0].split('->')[1]);
+				} else {
+					if (item.split('.')[1]) {
+						ITEM=item.split('.')[0]+'.'+item.split('.')[1];
+						TABLES.push(item.split('.')[0]);
+					} else ITEM=table+'.'+item;							
+				}
+				return ITEM;
 			};
+			 
+			function getFields(r,table)
+			{
+				for (var i=0;i<r.length;i++)
+				{
+					var item=r[i];
+					
+					// nested table
+					if (item.indexOf('{')>-1) {				
+						var tbl=item.split('->')[1].split('{')[0];					
+						var zs=item.indexOf('{')+1;
+						var ys=item.lastIndexOf('}');
+						var fields=item.substr(zs,ys-zs).split(',');
+						for (var z=0;z<fields.length;z++) {
+							//fields[z]=item.split('->')[0]+'->'+tbl+'.'+fields[z];
+							if (fields[z].indexOf('+')>-1) {
+								var value=fields[z].split('=')[1];
+								fields[z]=fields[z].split('=')[0];
+								if (fields[z].indexOf('+')!=fields[z].length-1) {
+									// concatenation
+									var fld=fields[z].split('+');
+									var concat=[];
+									for (var o=0;o<fld.length;o++) {
+										if ((fld[o].indexOf("'")==-1) && (fld[o].indexOf('"')==-1)) concat.push(item.split('->')[0]+'->'+tbl+'.'+fld[o]); else concat.push(fld[o]);
+									};
+									fields[z]=concat.join('+')+'='+value;
+								}
+							}
+						};
+						
+						getFields(fields,table);
+						return;
+					};
+					
+					// detect =			
+					if (item.indexOf('=')==-1) {			
+						// Pas un champ calculé
+						// Si le champ n'a pas de table de référence, on écrit celle courante
+						if (item.indexOf('.')==-1) item=table+'.'+item; else {
+							// On ajoute la table aux TABLES
+							// détecte s'il y a une liaison explicite
+							item=compute_item(item,table);
+						};
+						// On détecte le champ Order + ou -
+						if (item.indexOf('+')==item.length-1) {
+							item=item.split('+')[0];
+							ORDERBY.push(item);
+						};
+						if (item.indexOf('-')==item.length-1) {
+							item=item.split('-')[0];
+							ORDERBY.push(item+' DESC');
+						};
+						FIELDS.push(item);				
+					} else {
+						// C'est un champ calculé
+						var value=item.split('=')[1];	
+						var item=item.split('=')[0];
+						// Concaténation ?
+						if (item.indexOf('+')>-1) {
+							var items=item.split('+');
+							var CONCAT=[];
+							for (var j=0;j<items.length;j++) {
+								if ((items[j].indexOf("'")==-1) && (items[j].indexOf('"')==-1))
+								CONCAT.push(compute_item(items[j],table));
+								else
+								CONCAT.push(items[j]);
+							};
+							// On détecte le champ Order + ou - sur value
+							if (value.indexOf('+')==value.length-1) {
+								value=value.split('+')[0];
+								ORDERBY.push(value);
+							};
+							if (value.indexOf('-')==value.length-1) {
+								value=value.split('-')[0];
+								ORDERBY.push(value+' DESC');
+							};					
+							FIELDS.push("CONCAT("+CONCAT.join(',')+") "+value);
+						} else {
+							// c'est une fonction !
+							// détecte une fonction
+							if ((item.indexOf('(')>-1) && (item.indexOf(')')>-1)) {
+								var method=item.substr(0,item.indexOf('(')).toUpperCase();
+								var args=item.substr(item.indexOf('(')+1,item.indexOf(')')-item.indexOf('(')-1);						
+								// On détecte le champ Order + ou - sur value
+								if (value.indexOf('+')==value.length-1) {
+									value=value.split('+')[0];
+									ORDERBY.push(value);
+								};
+								if (value.indexOf('-')==value.length-1) {
+									value=value.split('-')[0];
+									ORDERBY.push(value+' DESC');
+								};					
+								FIELDS.push(method+'('+args+') '+value);						
+							}
+						}
+					}
+				}
+			};
+			 
+			// using DB library
+			
 			var db=__QUERY__.using('db');			
-			var ORDERBY=[];
-			var LIMIT=[];
+			//var db=require('db');
+			
+			var SQL=[];
 			var cmd=o[1];
 			var _db=o[0];
+			var ORDERBY=[];
+			var GROUPBY=[];
+			var LIMIT=[];
 			var FIELDS=[];
 			var JOINS=[];
 			var RELATION={};
+			var TABLES=[];
 			
-			// detection des champs
+			// Description du schéma
 			
+			/*
+			db://*
+			Liste des tables de la base de données
+			*/
 			if (cmd=="*") {
 				db.model(_db,"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = '"+_db+"'",cb);
 				return;
 			};
+			/*
+			db://@table
+			Liste des champs de la table
+			*/
 			if (cmd.indexOf('@')==0) {
 				db.model(_db,"select * from information_schema.columns where table_schema = '"+_db+"' and table_name = '"+cmd.split('@')[1]+"' order by ordinal_position,table_name",function(e,r){
 					cb(e,r);
 				});
 				return;
 			};
+			/*
+			db://table 						Retourne tous les enregistrements de la table
+			db://table{champ0,champ1} 		Retourne les champs spécifiés de la table
+			db://table{champ0,champ1}?id=7 	Retourne les champs spécifiés dont l'id = 7
+			*/
+
+			var table=cmd.split('?')[0].split('{')[0].split('.')[0];
+			
 			if (cmd.indexOf('}')>-1) {
 				var zs=cmd.indexOf('{')+1;
 				var ys=cmd.lastIndexOf('}');
@@ -185,49 +269,47 @@ __QUERY__ = {
 						pos=i+1;
 					};
 				};
-				results.push(fields.substr(pos,fields.lengh));
-				fields=getFields(results);
-			} else var fields=table+".*";
-			if (FIELDS.length==0) FIELDS.push(table+'.*');
-			var table=cmd.split('?')[0].split('{')[0].split('.')[0];
-			SQL.push('SELECT');
-			// JOINS
-			var external=[];
-			for (var i=0;i<FIELDS.length;i++) {
-				if (FIELDS[i].indexOf('.')>-1) {
-					if (external.indexOf(FIELDS[i].split('.')[0])==-1) {
-						if (FIELDS[i].split('.')[1]!="*") {
-							external.push(FIELDS[i].split('.')[0]);
-						} else FIELDS[i]=FIELDS[i].replace(/undefined/g,table);
-					}
-				} else {
-					if (FIELDS[i].indexOf('(')==-1) FIELDS[i]=table+'.'+FIELDS[i];
-				}
+				results.push(fields.substr(pos,fields.lengh));		
+				getFields(results,table);
 			};
+
+			if (FIELDS.length==0) FIELDS.push(table+'.*');
+			
+			/*
+			On commence à construire la requête
+			*/
+			SQL.push('SELECT');	
 			SQL.push(FIELDS.join(','));
+
 			SQL.push('FROM');
 			SQL.push(table);
-
-			getNDX(external,0,function(t) {
-				
-				for (var i=0;i<JOINS.length;i++) {
-					SQL.push(JOINS[i]);
+			
+			// Traitement des jointures
+			// Si c'est une innoDB
+			var sql="select CONSTRAINT_NAME, TABLE_NAME,COLUMN_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME from INFORMATION_SCHEMA.KEY_COLUMN_USAGE where CONSTRAINT_SCHEMA='"+_db+"' order by TABLE_NAME";
+			db.query(_db,sql,function(e,r) {
+				var joins={};
+				var primary={}
+				for (var i=0;i<r.length;i++) {
+					if (r[i].CONSTRAINT_NAME=="PRIMARY") primary[r[i].TABLE_NAME]=r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME;
+					if (r[i].TABLE_NAME==table) {
+						if (r[i].REFERENCED_TABLE_NAME) joins[r[i].REFERENCED_TABLE_NAME]="LEFT JOIN "+r[i].REFERENCED_TABLE_NAME+" ON "+r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME+'='+r[i].REFERENCED_TABLE_NAME+'.'+r[i].REFERENCED_COLUMN_NAME;				
+					};
 				};
+				TABLES=cleanArray(TABLES);
+				for (var i=0;i<TABLES.length;i++) {
+					if (joins[TABLES[i]]) JOINS.push(joins[TABLES[i]]); else {
+						// on a pas pu trouver de jointure implicite (myISAM par exemple), on en cherche une implicite
+						if (RELATION[TABLES[i]]) JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+RELATION[TABLES[i]]);
+					}
+				};
+
+				if (JOINS.length>0) SQL.push(JOINS.join(' '));
+				
+				// Traitement du query
 				
 				SQL.push('WHERE');
 				
-				// detection des fonctions
-				
-				if (cmd.indexOf('.limit(')>-1) {
-					var fcn=cmd.split('.limit(')[1].split(')')[0];
-					LIMIT.push(fcn);
-				};
-				if (cmd.indexOf('.sort(')>-1) {
-					var fcn=cmd.split('.sort(')[1].split(')')[0].split(',');
-					for (var i=0;i<fcn.length;i++) ORDERBY.push(fcn[i]);
-				};
-				
-				// detection du query
 				if (cmd.indexOf('?')==-1) SQL.push('-1'); else {
 					var query=cleanArray(cmd.split('?')[1].split('&'));
 					for (var i=0;i<query.length;i++)
@@ -267,16 +349,30 @@ __QUERY__ = {
 					};
 					SQL.push(order_by.join(', '));
 				};
+				
+				
+				// group by
+				GROUPBY=cmd.substr(cmd.lastIndexOf('}')+2,cmd.length).split('/');
+				if (ORDERBY.length>1) {
+					SQL.push('GROUP BY '+GROUPBY.join(', '));
+				};
+
 				// limit
 				if (LIMIT.length>0) {
 					SQL.push('LIMIT '+LIMIT[0]);
-				}
-				console.log(SQL.join(' '));
+				};
+				
+				console.log('------------------------------');
+				console.log(o.join('://'));
+				console.log(SQL.join(' '));	
+				console.log('------------------------------');
+				
 				db.model(o[0],SQL.join(' '),cb);
 
-			});
+			});			
 			
 		};
+				
 		if (!o.__SQL__) {
 			// Pas de params __SQL__ --> Mauvaise réponse
 			err={
@@ -301,13 +397,14 @@ __QUERY__ = {
 			};
 
 			var QUERY=o.__SQL__.split('://');
-			console.log(o.__SQL__);
+			
 			// no database selected
 			if (QUERY.length<2) {
 				err={
 					msg: "NO_DATABASE_SELECTED"
-				}
-			} else querycommander(QUERY);
+				};
+				cb(msg);
+			} else querycommander(QUERY,cb);
 		};
 	}
 };

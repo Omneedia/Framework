@@ -3283,7 +3283,14 @@ figlet(' omneedia', {
 	{
 		
 		return;
-	}
+	};
+	
+	// launcher
+	if (argv.indexOf('code')>-1)
+	{
+		var exec = require('child_process').spawn;
+		exec(__dirname+path.sep+'brackets'+path.sep+'Brackets',[PROJECT_HOME]).unref();
+	};
 	
 	// Create interface
 	if (argv.indexOf('create')>-1)
@@ -3291,18 +3298,18 @@ figlet(' omneedia', {
 		// create a view
 		if (argv.indexOf('view')>-1) {
 			var p=argv.indexOf('view');
-			var name=argv[p+1];
+			var type=argv[p+1];
+			var name=argv[p+2];
 			if (!name) {
-				console.log('');
-				console.log('  ! To create a view: \n    oa create view MyView --type window\n    Create a view called MyView of type window'.yellow);
-				console.log('\n    oa create view MyView --type xxx\n    Create a view called MyView of type xxx'.yellow);
-				console.log('');
-				return;			
+				name=type;
+				type="panel";
 			};
-			if (argv.indexOf('--type')==-1) var type="panel"; else {
-				var p=argv.indexOf('--type');
-				var type=argv[p+1];			
-			};
+			if (!type) {
+				var str='  ! Syntax error';
+				str+='  ! Ex: oa create view panel VMyPanel';
+				console.log(str.yellow);
+				return;				
+			}
 			if (!fs.existsSync(__dirname+require('path').sep+"tpl"+require('path').sep+'view'+require('path').sep+type+".js")) {
 				var str='  ! type '+type+' not found!';
 				console.log(str.yellow);

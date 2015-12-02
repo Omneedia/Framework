@@ -1,10 +1,7 @@
 function qstr(str) {
 	//if (typeof str === 'object') return "";
-	console.log('->');	
-	console.log(str);
 	if (str=="null") return 'NULL';
 	if (!str) return "NULL";
-	console.log('<-');
 	try {
 		if (str.indexOf('’')>-1) str=str.replace(/’/g,"'");
 	}catch(e) {};
@@ -357,7 +354,7 @@ module.exports={
 									fields.push(el);
 									if (isDate(el,o[el],response)) {
 										try {
-											if (o[el].indexOf('T')>-1) values.push(qstr(o[el].split('T')[0]+' '+o[el].split('T')[1].split('Z')[0]));
+											if (o[el].indexOf('T')>-1) values.push(qstr(o[el].split('T')[0]+' '+o[el].split('T')[1].split('Z')[0])); else values.push(o[el]);
 										} catch(e) {
 											values.push(qstr(ISODateString(o[el])));
 										}
@@ -369,7 +366,8 @@ module.exports={
 												values.push(qstr(o[el]));
 											}
 										}
-									}
+									};
+									
 								};
 								if (isDBX==1) {
 									fields.push("createdAt");
@@ -400,6 +398,7 @@ module.exports={
 										//console.log('_____ INSERT');
 										var fields=[];
 										var values=[];								
+										var ol=0;
 										for (var el in o) {
 											fields.push(el);
 											if (isDate(el,o[el],response)) {
@@ -416,7 +415,9 @@ module.exports={
 														values.push(qstr(o[el]));
 													}
 												}
-											}
+											};
+											if (!values[ol]) values.push('NULL');
+											ol++;
 										};
 										if (isDBX==1) {
 											fields.push("createdAt");
