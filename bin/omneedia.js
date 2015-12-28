@@ -4,10 +4,10 @@
  *
  */
 
-$_VERSION = "0.9.4";
+$_VERSION = "0.9.5";
 
-CDN = "http://omneedia.github.io/cdn"; //PROD
-//CDN = "/cdn"; // DEBUG
+//CDN = "http://omneedia.github.io/cdn"; //PROD
+CDN = "/cdn"; // DEBUG
 
 var fs=require('fs');
 var path=require('path');
@@ -3596,30 +3596,43 @@ figlet(' omneedia', {
 	
 	function process_api(d,i,batch,res)
 	{
+		function uniq(a) {
+			var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
+
+			return a.filter(function(item) {
+				var type = typeof item;
+				if(type in prims)
+					return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
+				else
+					return objs.indexOf(item) >= 0 ? false : objs.push(item);
+			});
+		};	
+		
 		if (i>=d.length) {
 			var str = JSON.stringify(batch, 'utf8');
 			res.end(str);
 		} else {
-			var api=d[i];			
+			var api=d[i];				
 			try{
 				var name = require.resolve(api.action);
 				delete require.cache[name];
 			}catch(e){
 			};			
 			if (api.action=="__QUERY__")
-			var x=require(__dirname+path.sep+"node_modules"+path.sep+"db"+path.sep+api.action+".js");
-			else
-			var x=require(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+api.action+".js");
-			x.using=function(unit) {
-				if (fs.existsSync(__dirname+path.sep+'node_modules'+path.sep+unit)) 
-				return require(__dirname+path.sep+'node_modules'+path.sep+unit);
-				else {
-					if (fs.existsSync(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit)) 
-						return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+			var x=require(__dirname+path.sep+"node_modules"+path.sep+"db"+path.sep+"__QUERY__.js");
+			else {
+				var x=require(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+api.action+".js");
+				x.using=function(unit) {
+					if (fs.existsSync(__dirname+path.sep+'node_modules'+path.sep+unit)) 
+					return require(__dirname+path.sep+'node_modules'+path.sep+unit);
 					else {
-						return require(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+unit.replace(/\//g,require('path').sep));
+						if (fs.existsSync(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit)) 
+							return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+						else {
+							return require(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+unit.replace(/\//g,require('path').sep));
+						}
 					}
-				}
+				};
 			};
 			
 			var myfn=x[api.method].toString().split('function')[1].split('{')[0].trim().split('(')[1].split(')')[0].split(',');
@@ -3634,6 +3647,7 @@ figlet(' omneedia', {
 			for (var e=0;e<response.params.length-1;e++) {
 				p.push(api.data[e]);
 			};
+			
 			p.push(function(err,response){
 				if (err) {
 					batch.push({
@@ -3657,7 +3671,7 @@ figlet(' omneedia', {
 				};
 				process_api(d,i+1,batch,res);				
 			});
-			try {
+			try {				
 				x[api.method].apply({},p);
 			} catch (e) {
 				batch.push({
@@ -3680,10 +3694,7 @@ figlet(' omneedia', {
         }else{
             d.push(data);
         };
-		for (var i=0;i<d.length;i++)
-		{
-			process_api(d,0,[],resp);
-		}
+		process_api(d,0,[],resp);
     };
 	
 	if (argv.indexOf('start')>-1)

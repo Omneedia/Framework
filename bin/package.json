@@ -32,7 +32,7 @@
 	"moment": "2.10.3",
 	"morgan": "1.6.0",
 	"multer": "0.1.8",
-	"mysql": "2.7.0",
+	"mysql": "",
 	"node-uuid": "1.4.3",
 	"open": "0.0.5",
 	"ouch": "0.2.0-beta",
