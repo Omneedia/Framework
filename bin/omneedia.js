@@ -4,7 +4,7 @@
  *
  */
 
-$_VERSION = "0.9.5";
+$_VERSION = "0.9.5a";
 
 //CDN = "http://omneedia.github.io/cdn"; //PROD
 CDN = "/cdn"; // DEBUG
@@ -4476,6 +4476,7 @@ figlet(' omneedia', {
 						}
 					
 					};				
+					_App[Settings.API[i]].DB=require(__dirname+path.sep+'node_modules'+path.sep+"db"+path.sep+"DB.js");
 					_App[Settings.API[i]].using=function(unit) {
 						if (fs.existsSync(__dirname+path.sep+'node_modules'+path.sep+unit)) 
 						return require(__dirname+path.sep+'node_modules'+path.sep+unit);
