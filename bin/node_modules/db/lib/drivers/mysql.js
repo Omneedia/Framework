@@ -341,7 +341,7 @@ module.exports={
 						});
 						var tytpe=response[i].Type.toUpperCase();
 						if (response[i].Field=="createdAt") isDBX=1;
-						console.log(tytpe);
+						
 						if (tytpe.indexOf("TINYINT")>-1) _boolean.push(response[i].Field);
 						if ((tytpe=="LONGTEXT") || (tytpe.indexOf('BLOB')>-1) || (tytpe.indexOf('BINARY')>-1)) _fields.push(response[i]);
 					};

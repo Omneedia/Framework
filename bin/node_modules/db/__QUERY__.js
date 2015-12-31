@@ -1,10 +1,18 @@
 __QUERY__ = {
 	post: function(_db,tb,obj,cb) {
-		var db=__QUERY__.using('db');
+		try {
+			var db=__QUERY__.using('db');
+		}catch(e) {
+			var db=require(__dirname+require('path').sep+'lib');
+		};
 		db.post(_db,tb,obj,cb);
 	},
 	del: function(_db,tb,obj,cb) {
-		var db=__QUERY__.using('db');
+		try {
+			var db=__QUERY__.using('db');
+		}catch(e) {
+			var db=require(__dirname+require('path').sep+'lib');
+		};
 		db.del(_db,tb,obj,cb);
 	},
 	exec: function(o,cb)
@@ -215,7 +223,11 @@ __QUERY__ = {
 			 
 			// using DB library
 			
-			var db=__QUERY__.using('db');			
+			try {
+				var db=__QUERY__.using('db');
+			}catch(e) {
+				var db=require(__dirname+require('path').sep+'lib');
+			};
 			
 			var SQL=[];
 			var cmd=o[1];

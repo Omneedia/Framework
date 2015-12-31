@@ -6,8 +6,8 @@
 
 $_VERSION = "0.9.5a";
 
-//CDN = "http://omneedia.github.io/cdn"; //PROD
-CDN = "/cdn"; // DEBUG
+CDN = "http://omneedia.github.io/cdn"; //PROD
+//CDN = "/cdn"; // DEBUG
 
 var fs=require('fs');
 var path=require('path');
@@ -751,7 +751,6 @@ function make_bootstrap()
 					};
 
 					async.map(BOOTSTRAP_FILES,download,function(err,result) {
-						console.log(err);
 						fs.writeFileSync(PROJECT_DEV+path.sep+"webapp"+path.sep+"bootstrap.js","var Ext = Ext || {};Ext.manifest = {compatibility:{ext: '4.2'}}\n"+result.join('\n\n\n/*************************************************/\n\n\n'));
 						make_resources(make_libraries);
 					});
