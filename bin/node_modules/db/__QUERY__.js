@@ -69,6 +69,7 @@ __QUERY__ = {
 				return obj;
 			};	
 			function query_fields(q) {
+				
 				if (q.indexOf('=')>-1) {
 					// =
 					if (q.split('=')[1].indexOf('*')>-1) {
@@ -372,8 +373,7 @@ __QUERY__ = {
 					};
 					SQL.push(order_by.join(', '));
 				};
-				
-				
+					
 				// group by
 				GROUPBY=cmd.substr(cmd.lastIndexOf('}')+2,cmd.length).split('/');
 				if (ORDERBY.length>1) {
@@ -387,10 +387,10 @@ __QUERY__ = {
 				
 				console.log('------------------------------');
 				console.log(o.join('://'));
-				console.log(SQL.join(' '));	
+				SQL=SQL.join(' ');					
 				console.log('------------------------------');
 				
-				db.model(o[0],SQL.join(' '),cb);
+				db.model(o[0],SQL,cb);
 
 			});			
 			
@@ -406,11 +406,6 @@ __QUERY__ = {
 			// get params
 			var xargs=[];
 			for (var el in o) {
-				//console.log(el);
-				/*if (el=="filter") {
-					var t=o["filter"];
-					for (var k=0;k<t.length;k++) xargs.push(t[k].property+'='+t[k].value);
-				};*/
 				if ((el!="pudid") && (el!="filter") && (el!="page") && (el!="query") && (el!="__SQL__") && (el!="start") && (el!="limit")) {
 					xargs.push(el+'='+o[el]);
 				}
@@ -418,7 +413,23 @@ __QUERY__ = {
 			if (xargs.length>0) {
 				if (o.__SQL__.indexOf('?')>-1) o.__SQL__+="&"+xargs.join('&'); else o.__SQL__+="?"+xargs.join('&');
 			};
-				
+			
+			console.log(o.__SQL__);
+			
+			if (o.__SQL__.indexOf('?')>-1) {
+				var tt=o.__SQL__.split('?')[1].split('&');
+				var cc={};
+				var listargs=[];
+				for (var i=0;i<tt.length;i++) {
+					var cp=tt[i];
+					if (cp.indexOf('=')>-1) {
+						cc[cp.split('=')[0]]=cp.split('=')[1];
+					} else listargs.push(cp);
+				};				
+				for (var el in cc) listargs.push(el+'='+cc[el]);
+				o.__SQL__=o.__SQL__.split('?')[0]+'?'+listargs.join('&');
+			};
+			
 			var QUERY=o.__SQL__.split('://');
 			
 			// no database selected
