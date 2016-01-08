@@ -20,7 +20,7 @@ __QUERY__ = {
 		var err=null;
 		var response=null;
 		var SQL=[];
-		function querycommander(o,cb) {
+		function querycommander(o,PARAMS,cb) {
 					
 			/*
 			 * Private functions
@@ -304,17 +304,18 @@ __QUERY__ = {
 			var sql="select CONSTRAINT_NAME, TABLE_NAME,COLUMN_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME from INFORMATION_SCHEMA.KEY_COLUMN_USAGE where CONSTRAINT_SCHEMA='"+_db+"' order by TABLE_NAME";
 			db.query(_db,sql,function(e,r) {
 				var joins={};
-				var primary={}
+				var primary={};				
 				for (var i=0;i<r.length;i++) {
 					if (r[i].CONSTRAINT_NAME=="PRIMARY") primary[r[i].TABLE_NAME]=r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME;
-					if (r[i].TABLE_NAME==table) {
+					/*if (r[i].TABLE_NAME==table) {*/
 						if (r[i].REFERENCED_TABLE_NAME) joins[r[i].REFERENCED_TABLE_NAME]="LEFT JOIN "+r[i].REFERENCED_TABLE_NAME+" ON "+r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME+'='+r[i].REFERENCED_TABLE_NAME+'.'+r[i].REFERENCED_COLUMN_NAME;				
-					};
+					/*};*/
 				};
 				TABLES=cleanArray(TABLES);
-				for (var i=0;i<TABLES.length;i++) {
+				
+				for (var i=0;i<TABLES.length;i++) {					
 					if (joins[TABLES[i]]) JOINS.push(joins[TABLES[i]]); else {
-						// on a pas pu trouver de jointure implicite (myISAM par exemple), on en cherche une explicite
+						// on n'a pas pu trouver de jointure implicite (myISAM par exemple), on en cherche une explicite
 						if (RELATION[TABLES[i]]) {
 							if (RELATION[TABLES[i]].indexOf("*")>-1) {
 								// S'il y a une jointure multiple
@@ -323,7 +324,9 @@ __QUERY__ = {
 							} else JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+RELATION[TABLES[i]]);
 						} else {
 							// Pas de jointure explicite, on déclare une jointure par clé liée (table1.kage=table2.kage)
-							JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+table+'.'+primary[TABLES[i]].split('.')[1]);
+							try {
+								JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+table+'.'+primary[TABLES[i]].split('.')[1]);
+							}catch(e) {}
 						}
 					}
 				};
@@ -383,11 +386,18 @@ __QUERY__ = {
 				// limit
 				if (LIMIT.length>0) {
 					SQL.push('LIMIT '+LIMIT[0]);
-				};
+				} else {
+					if (PARAMS.start) {
+						if (PARAMS.limit) {
+							SQL.push('LIMIT '+PARAMS.start+', '+PARAMS.limit);
+						}
+					}
+				}
 				
 				console.log('------------------------------');
 				console.log(o.join('://'));
-				SQL=SQL.join(' ');					
+				SQL=SQL.join(' ');
+				console.log(SQL);
 				console.log('------------------------------');
 				
 				db.model(o[0],SQL,cb);
@@ -402,7 +412,7 @@ __QUERY__ = {
 				msg: "BAD_RESPONSE"
 			};
 		} else {
-
+			
 			// get params
 			var xargs=[];
 			for (var el in o) {
@@ -413,9 +423,7 @@ __QUERY__ = {
 			if (xargs.length>0) {
 				if (o.__SQL__.indexOf('?')>-1) o.__SQL__+="&"+xargs.join('&'); else o.__SQL__+="?"+xargs.join('&');
 			};
-			
-			console.log(o.__SQL__);
-			
+					
 			if (o.__SQL__.indexOf('?')>-1) {
 				var tt=o.__SQL__.split('?')[1].split('&');
 				var cc={};
@@ -438,7 +446,7 @@ __QUERY__ = {
 					msg: "NO_DATABASE_SELECTED"
 				};
 				cb(msg);
-			} else querycommander(QUERY,cb);
+			} else querycommander(QUERY,o,cb);
 		};
 	}
 };

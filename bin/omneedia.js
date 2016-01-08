@@ -4,10 +4,10 @@
  *
  */
 
-$_VERSION = "0.9.5a";
+$_VERSION = "0.9.5b";
 
-CDN = "http://omneedia.github.io/cdn"; //PROD
-//CDN = "/cdn"; // DEBUG
+//CDN = "http://omneedia.github.io/cdn"; //PROD
+CDN = "/cdn"; // DEBUG
 
 var fs=require('fs');
 var path=require('path');
@@ -883,27 +883,30 @@ function getController(controller)
 		return;
 	};
 	_controller=fs.readFileSync(_controller,"utf-8");
+	
 	var views=_controller.split('views')[1].split(']')[0].split('[')[1].trim().replace(/\t/g,'').replace(/\n/g,'').replace(/"/g,'').replace(/'/g,"").split(',');
 	try {
-		var stores=_controller.split('stores')[1].split(']')[0].split('[')[1].trim().replace(/\t/g,'').replace(/\n/g,'').replace(/"/g,'').replace(/'/g,"").split(',');
+		var stores=_controller.split('init')[0].split('stores')[1].split(']')[0].split('[')[1].trim().replace(/\t/g,'').replace(/\n/g,'').replace(/"/g,'').replace(/'/g,"").split(',');		
 	}catch(e) {
 		var stores=[];
 	};
+
 	try {
-	var models=_controller.split('models')[1].split(']')[0].split('[')[1].trim().replace(/\t/g,'').replace(/\n/g,'').replace(/"/g,'').replace(/'/g,"").split(',');
+	var models=_controller.split('init')[0].split('models')[1].split(']')[0].split('[')[1].trim().replace(/\t/g,'').replace(/\n/g,'').replace(/"/g,'').replace(/'/g,"").split(',');
 	}catch(e) {
 		var models=[];
 	};
 	var result="";
+	
 	for (var i=0;i<models.length;i++)
 	{
 		var m=models[i].replace(/\./g,"/");
-		if (PROCESSING_MODEL.indexOf(m) == -1) {
-			models[i]=workspace+"model"+path.sep+m.trim()+".js";
-			console.log('    - Adding model '+m.trim());
-			if (m!="") result+=fs.readFileSync(models[i],"utf-8")+"\n";
-			PROCESSING_MODEL.push(m);
-		}
+			if (PROCESSING_MODEL.indexOf(m) == -1) {
+				models[i]=workspace+"model"+path.sep+m.trim()+".js";
+				console.log('    - Adding model '+m.trim());
+				if (m!="") result+=fs.readFileSync(models[i],"utf-8")+"\n";
+				PROCESSING_MODEL.push(m);
+			}
 	};
 	result+="\n\n";
 	
@@ -917,7 +920,7 @@ function getController(controller)
 		}
 	};
 	var nview=[];
-	
+		
 	for (var i=0;i<views.length;i++)
 	{
 		var v=views[i];
@@ -930,7 +933,6 @@ function getController(controller)
 	{
 		result+=fs.readFileSync(nview[i].replace(/\\/g,require('path').sep),"utf-8")+"\n";
 	};
-
 
 	if (fs.existsSync(PROJECT_DEV+path.sep+"webapp"+path.sep+"objects.js"))
 	fs.appendFileSync(PROJECT_DEV+path.sep+"webapp"+path.sep+"objects.js",result);
