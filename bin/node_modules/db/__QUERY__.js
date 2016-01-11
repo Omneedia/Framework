@@ -268,6 +268,7 @@ __QUERY__ = {
 			*/
 
 			var table=cmd.split('?')[0].split('{')[0].split('.')[0];
+			if (table.indexOf('/')>-1) table=table.split('/')[0];
 			
 			if (cmd.indexOf('}')>-1) {
 				var zs=cmd.indexOf('{')+1;
@@ -296,7 +297,7 @@ __QUERY__ = {
 			SQL.push('SELECT');	
 			SQL.push(FIELDS.join(','));
 
-			SQL.push('FROM');
+			SQL.push('FROM');			
 			SQL.push(table);
 			
 			// Traitement des jointures
@@ -307,9 +308,7 @@ __QUERY__ = {
 				var primary={};				
 				for (var i=0;i<r.length;i++) {
 					if (r[i].CONSTRAINT_NAME=="PRIMARY") primary[r[i].TABLE_NAME]=r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME;
-					/*if (r[i].TABLE_NAME==table) {*/
-						if (r[i].REFERENCED_TABLE_NAME) joins[r[i].REFERENCED_TABLE_NAME]="LEFT JOIN "+r[i].REFERENCED_TABLE_NAME+" ON "+r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME+'='+r[i].REFERENCED_TABLE_NAME+'.'+r[i].REFERENCED_COLUMN_NAME;				
-					/*};*/
+					if (r[i].REFERENCED_TABLE_NAME) joins[r[i].REFERENCED_TABLE_NAME]="LEFT JOIN "+r[i].REFERENCED_TABLE_NAME+" ON "+r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME+'='+r[i].REFERENCED_TABLE_NAME+'.'+r[i].REFERENCED_COLUMN_NAME;				
 				};
 				TABLES=cleanArray(TABLES);
 				
@@ -368,9 +367,9 @@ __QUERY__ = {
 				};
 
 				// group by
-				GROUPBY=cmd.substr(cmd.lastIndexOf('}')+2,cmd.length).split('/');
-				GROUPBY.shift();
+				if (cmd.indexOf('?')>-1) GROUPBY=cmd.split('?')[1].split('/'); else GROUPBY=cmd.substr(cmd.lastIndexOf('}')+2,cmd.length).split('/');				
 				if (GROUPBY.length>1) {
+					GROUPBY.shift();
 					SQL.push('GROUP BY '+GROUPBY.join(', '));
 				};
 
