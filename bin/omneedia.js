@@ -4274,14 +4274,9 @@ figlet(' omneedia', {
 					_Task[MSettings.jobs[ndx].api.split('.')[1]]({},function(){
 						console.log('--> Job done.');
 					});					
-				});
-				newjob.name=MSettings.jobs[i].api;
-				
+				});				
 			}
 		};
-
-		//return;
-
 		
 		app.get('/db',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
