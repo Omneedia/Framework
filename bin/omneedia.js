@@ -4,7 +4,7 @@
  *
  */
 
-$_VERSION = "0.9.5b";
+$_VERSION = "0.9.5c";
 
 CDN = "http://omneedia.github.io/cdn"; //PROD
 //CDN = "/cdn"; // DEBUG
@@ -2740,8 +2740,27 @@ function AppUpdate(zzz)
 					shelljs.exec('git push -u origin master',{silent: true});
 					console.log('    Done.');
 				} else console.log("\n  ! There is no github url in manifest".yellow);
-			} else {
-				console.log("Can't update repository... #ERR69");
+			} else {				
+				if (process.argv.indexOf("--force")>-1) {
+					console.log('    -> Updating project');
+					//Update_DB();
+					shelljs.exec('git config --global core.autocrlf false',{silent: true});
+					shelljs.exec('git add --all',{silent: true});
+					var x=shelljs.exec('git log',{silent: true}).output;			
+					shelljs.exec('git commit -m "Update# '+x.split('commit ').length+'"',{silent: true});					
+					if (Manifest.git!="") {
+						process.chdir(PROJECT_HOME);
+						var text=shelljs.exec('git remote',{silent: true});
+						if (text.output.indexOf('origin')==-1) {
+							console.log('       - Adding remote origin');
+							shelljs.exec('git remote add origin '+Manifest.git,{silent:true});
+						};
+						shelljs.exec('git push -f -u origin master',{silent: true});
+						console.log('    Done.');
+					} else console.log("\n  ! There is no github url in manifest".yellow);				
+				} else {
+					console.log("  Can't update repository... \n  Try to use --force to force updating remote repository".yellow);
+				}
 			}
 		};
 
