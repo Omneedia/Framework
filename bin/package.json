@@ -57,7 +57,8 @@
 	"xml2js": "0.4.9",
 	"imagemagick": "",
 	"figlet": "",
-	"md5-file": ""
+	"md5-file": "",
+	"node-schedule": ""
   },
   "devDependencies": {},
   "scripts": {

@@ -4,7 +4,7 @@
  *
  */
 
-$_VERSION = "0.9.5c";
+$_VERSION = "0.9.6";
 
 CDN = "http://omneedia.github.io/cdn"; //PROD
 //CDN = "/cdn"; // DEBUG
@@ -44,7 +44,7 @@ if (process.argv.indexOf('--builder')>-1) {
 		};
 	}; 	
 };
-
+/*
 function _Task_execute(App,Tasker)
 {
 	if (fs.existsSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"jobs"+path.sep+Tasker.taskId+".json")) {
@@ -68,7 +68,7 @@ function _Task_execute(App,Tasker)
 			},1000);
 	};
 };
-
+*/
 var uniqueid=require('node-uuid');
 _SESSION_=uniqueid.v4();
 
@@ -4155,7 +4155,7 @@ figlet(' omneedia', {
 					{
 						params.push(response.param[response.params[i]]);
 					};
-					console.log(params);
+					//console.log(params);
 					if ((response.params.length>0) && (url.length<1)) res.end(JSON.stringify(response,null,4));
 					else {
 						params.push(function(e,x){
@@ -4243,6 +4243,45 @@ figlet(' omneedia', {
 		END OF NOTIFICATION PLUGIN
 		
 		*/
+		
+		/*
+				
+		Add Task runner
+				
+		*/
+		var Tasker=[];
+		if (MSettings.jobs) {
+			if (MSettings.jobs.length>0) var schedule = require('node-schedule');
+			
+			for (var i=0;i<MSettings.jobs.length;i++) {
+				console.log('  - Scheduling job#'+i);
+				var newjob=schedule.scheduleJob(MSettings.jobs[i].cron,function(){
+					var ndx=this.name.substr(this.name.lastIndexOf(' ')+1,255).split('>')[0];
+					ndx=ndx*1-1;
+					var _Task = require(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Services'+path.sep+MSettings.jobs[ndx].api.split('.')[0]+".js");
+					_Task.DB=require(__dirname+path.sep+'node_modules'+path.sep+"db"+path.sep+"DB.js");
+					_Task.using=function(unit) {
+						if (fs.existsSync(__dirname+path.sep+'node_modules'+path.sep+unit)) 
+						return require(__dirname+path.sep+'node_modules'+path.sep+unit);
+						else {
+							if (fs.existsSync(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit)) 
+							return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+							else {
+								return require(__dirname+path.sep+unit.replace(/\//g,require('path').sep));
+							}
+						}										
+					};	
+					_Task[MSettings.jobs[ndx].api.split('.')[1]]({},function(){
+						console.log('--> Job done.');
+					});					
+				});
+				newjob.name=MSettings.jobs[i].api;
+				
+			}
+		};
+
+		//return;
+
 		
 		app.get('/db',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
@@ -4515,31 +4554,6 @@ figlet(' omneedia', {
 				_App.init(app,express);
 			};
 		
-			/*
-					
-			Add Task runner
-					
-			*/
-					
-			var __TTimer={};
-			if (Manifest.tasks) {
-				if (fs.existsSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"index.js")) { 
-					var _Task = require(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"index.js");
-					for (var i=0;i<Manifest.tasks.length;i++) _Task_execute(_Task,Manifest.tasks[i]);
-				};
-			};
-			
-			App.tasks={
-				add: function(cc,o)
-				{
-					var dd=PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"jobs";
-					if (!fs.existsSync(dd)) fs.mkdirSync(dd);
-					dd=dd+path.sep+cc+".json";
-					if (fs.existsSync(dd)) dd=JSON.parse(fs.readFileSync(dd,'utf-8')); else dd=[];
-					dd.push(o);
-					fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"jobs"+path.sep+cc+".json",JSON.stringify(dd,null,4));
-				}
-			};
 			
 			app.listen(Manifest.server.port);
 			
