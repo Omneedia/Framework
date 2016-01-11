@@ -338,7 +338,8 @@ __QUERY__ = {
 				SQL.push('WHERE');
 				
 				if (cmd.indexOf('?')==-1) SQL.push('-1'); else {
-					var query=cleanArray(cmd.split('?')[1].split('&'));
+					var _cmd=cmd.split('?')[1].split('/')[0];
+					var query=cleanArray(_cmd.split('&'));
 					for (var i=0;i<query.length;i++)
 					{
 						if (query[i].indexOf('(')==-1) {
@@ -365,6 +366,14 @@ __QUERY__ = {
 						};
 					}
 				};
+
+				// group by
+				GROUPBY=cmd.substr(cmd.lastIndexOf('}')+2,cmd.length).split('/');
+				GROUPBY.shift();
+				if (GROUPBY.length>1) {
+					SQL.push('GROUP BY '+GROUPBY.join(', '));
+				};
+
 				// order by
 				if (ORDERBY.length>0) {
 					SQL.push('ORDER BY');
@@ -377,12 +386,6 @@ __QUERY__ = {
 					SQL.push(order_by.join(', '));
 				};
 					
-				// group by
-				GROUPBY=cmd.substr(cmd.lastIndexOf('}')+2,cmd.length).split('/');
-				if (ORDERBY.length>1) {
-					SQL.push('GROUP BY '+GROUPBY.join(', '));
-				};
-
 				// limit
 				if (LIMIT.length>0) {
 					SQL.push('LIMIT '+LIMIT[0]);
