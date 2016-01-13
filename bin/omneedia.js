@@ -3759,8 +3759,10 @@ figlet(' omneedia', {
 		}));
 		
 		app.use(require('errorhandler')({ dumpExceptions: true, showStack: true }))
+		console.log(PROJECT_HOME+path.sep+'www'+path.sep);
+		app.use("/src",express.static(PROJECT_HOME+path.sep+'src'+path.sep));
 		
-		// MOBILE STUFF
+		// MOBILE STUFF		
 		
 		if (Manifest.platform=="mobile")
 		{
@@ -4099,6 +4101,7 @@ figlet(' omneedia', {
 		app.get('/favicon.ico',function(req,res) {
 			res.end('');
 		});
+		
 		app.get('/api/:ns/:fn',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
 			if (fs.existsSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+req.params.ns+".js")) {
@@ -4226,7 +4229,7 @@ figlet(' omneedia', {
 			});
 			
 		});
-		
+
 		/*
 		
 		NOTIFICATION CENTER PLUGIN
@@ -4277,6 +4280,7 @@ figlet(' omneedia', {
 				});				
 			}
 		};
+		
 		
 		app.get('/db',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
@@ -4358,6 +4362,7 @@ figlet(' omneedia', {
 				res.end(JSON.stringify(r,null,4));
 			});
 		});	
+		
 		app.delete('/db/:db/:table',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
 			var arr={
@@ -4548,8 +4553,7 @@ figlet(' omneedia', {
 				};
 				_App.init(app,express);
 			};
-		
-			
+					
 			app.listen(Manifest.server.port);
 			
 			if (Manifest.platform=="mobile") {

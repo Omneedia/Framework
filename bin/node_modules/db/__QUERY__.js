@@ -308,28 +308,56 @@ __QUERY__ = {
 				var primary={};				
 				for (var i=0;i<r.length;i++) {
 					if (r[i].CONSTRAINT_NAME=="PRIMARY") primary[r[i].TABLE_NAME]=r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME;
-					if (r[i].REFERENCED_TABLE_NAME) joins[r[i].REFERENCED_TABLE_NAME]="LEFT JOIN "+r[i].REFERENCED_TABLE_NAME+" ON "+r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME+'='+r[i].REFERENCED_TABLE_NAME+'.'+r[i].REFERENCED_COLUMN_NAME;				
+					if ((r[i].REFERENCED_TABLE_NAME) && (table!=r[i].REFERENCED_TABLE_NAME)) {
+						if (!joins[r[i].REFERENCED_TABLE_NAME])
+						joins[r[i].REFERENCED_TABLE_NAME]="LEFT JOIN "+r[i].REFERENCED_TABLE_NAME+" ON "+r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME+'='+r[i].REFERENCED_TABLE_NAME+'.'+r[i].REFERENCED_COLUMN_NAME;
+						else {
+							if (Array.isArray(joins[r[i].REFERENCED_TABLE_NAME])) {
+								joins[r[i].REFERENCED_TABLE_NAME].push("LEFT JOIN "+r[i].REFERENCED_TABLE_NAME+" ON "+r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME+'='+r[i].REFERENCED_TABLE_NAME+'.'+r[i].REFERENCED_COLUMN_NAME);
+							} else {
+								var obj=[];
+								obj.push(joins[r[i].REFERENCED_TABLE_NAME]);
+								joins[r[i].REFERENCED_TABLE_NAME]=obj;
+								joins[r[i].REFERENCED_TABLE_NAME].push("LEFT JOIN "+r[i].REFERENCED_TABLE_NAME+" ON "+r[i].TABLE_NAME+'.'+r[i].COLUMN_NAME+'='+r[i].REFERENCED_TABLE_NAME+'.'+r[i].REFERENCED_COLUMN_NAME);								
+							}
+						}
+					};
 				};
-				TABLES=cleanArray(TABLES);
 				
+				TABLES=cleanArray(TABLES);				
+				var MYTABLES=TABLES;
+				MYTABLES.push(table);
 				for (var i=0;i<TABLES.length;i++) {					
-					if (joins[TABLES[i]]) JOINS.push(joins[TABLES[i]]); else {
+					if (joins[TABLES[i]]) {
+						// jointure implicite (innoDB)
+						if (Array.isArray(joins[TABLES[i]])) {
+							var arr=joins[TABLES[i]];
+							for (var z=0;z<arr.length;z++) {
+								var tb=arr[z].split('ON ')[1].split('.')[0];
+								if (MYTABLES.indexOf(tb)>-1) JOINS.push(arr[z]);
+							};
+						} else {
+							JOINS.push(joins[TABLES[i]]); 
+						}
+					}else {
 						// on n'a pas pu trouver de jointure implicite (myISAM par exemple), on en cherche une explicite
 						if (RELATION[TABLES[i]]) {
 							if (RELATION[TABLES[i]].indexOf("*")>-1) {
 								// S'il y a une jointure multiple
 								var ttt=RELATION[TABLES[i]].split('*')[1];
-								JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+primary[ttt]);	
-							} else JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+RELATION[TABLES[i]]);
+								if (TABLES[i]!=table) JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+primary[ttt]);	
+							} else {
+								if (TABLES[i]!=table) JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+RELATION[TABLES[i]]);
+							}
 						} else {
 							// Pas de jointure explicite, on déclare une jointure par clé liée (table1.kage=table2.kage)
 							try {
-								JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+table+'.'+primary[TABLES[i]].split('.')[1]);
+								if (TABLES[i]!=table) JOINS.push("LEFT JOIN "+TABLES[i]+" ON "+primary[TABLES[i]]+'='+table+'.'+primary[TABLES[i]].split('.')[1]);
 							}catch(e) {}
 						}
 					}
 				};
-
+				
 				if (JOINS.length>0) SQL.push(JOINS.join(' '));
 				
 				// Traitement du query
