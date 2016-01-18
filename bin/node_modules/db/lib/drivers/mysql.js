@@ -331,11 +331,16 @@ module.exports={
 			if (err) fn('CONNECTION_REFUSED',err); else  {
 				var sql="";
 				// get index
+                var all_o=[];
+                for (var el in o) all_o.push(el);
 				q.query("SHOW COLUMNS FROM "+tb,function(e,response) {
 					var r=[];
 					var _fields=[];
 					var _boolean=[];
+                    var zobj={};
+                    
 					for (var i=0;i<response.length;i++) {
+                        if (all_o.indexOf(response[i].Field)>-1) zobj[response[i].Field]=o[response[i].Field];
 						if (response[i].Key=="PRI") r.push({
 							Column_name: response[i].Field
 						});
@@ -345,6 +350,8 @@ module.exports={
 						if (tytpe.indexOf("TINYINT")>-1) _boolean.push(response[i].Field);
 						if ((tytpe=="LONGTEXT") || (tytpe.indexOf('BLOB')>-1) || (tytpe.indexOf('BINARY')>-1)) _fields.push(response[i]);
 					};
+                    o=zobj;
+                    console.log(o);
 					getBase64(_fields,0,o,function() {					
 						if (r.length>0) {
 							//console.log(o);
