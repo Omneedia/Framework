@@ -6,8 +6,8 @@
 
 $_VERSION = "0.9.6";
 
-//CDN = "http://omneedia.github.io/cdn"; //PROD
-CDN = "/cdn"; // DEBUG
+CDN = "http://omneedia.github.io/cdn"; //PROD
+//CDN = "/cdn"; // DEBUG
 
 var fs=require('fs');
 var path=require('path');
@@ -876,7 +876,8 @@ function getDistinctArray(arr) {
 function getController(controller)
 {
 	var workspace=PROJECT_WEB+path.sep+"Contents"+path.sep+"Application"+path.sep+"app"+path.sep;
-	var _controller=workspace+"controller"+path.sep+controller+".js";
+	var _controller=workspace+"controller"+path.sep+controller.replace('.',path.sep)+".js";
+	
 	console.log('    - Adding controller '+controller);
 	if (!fs.existsSync(_controller)) {
 		console.error("  ! Can't find controller "+controller+"".yellow);
@@ -897,7 +898,7 @@ function getController(controller)
 		var models=[];
 	};
 	var result="";
-	
+
 	for (var i=0;i<models.length;i++)
 	{
 		var m=models[i].replace(/\./g,"/");
@@ -1034,7 +1035,7 @@ function make_mvc()
 	{
 		getController(controllers[i]);
 		var workspace=PROJECT_WEB+path.sep+"Contents"+path.sep+"Application"+path.sep+"app"+path.sep;
-		var _controller=workspace+"controller"+path.sep+controllers[i]+".js";
+		var _controller=workspace+"controller"+path.sep+controllers[i].replace('.',path.sep)+".js";
 		var result=fs.readFileSync(_controller,"utf-8");
 		if (!fs.existsSync(PROJECT_DEV+path.sep+"webapp"+path.sep+"objects.js")) {
 			fs.writeFileSync(PROJECT_DEV+path.sep+"webapp"+path.sep+"objects.js",result);
@@ -3889,6 +3890,15 @@ figlet(' omneedia', {
 			});  
 			app.get('/account', ensureAuthenticated, function(req, res){
 				if (!req.user) req.user=req.session.user;
+				var response=[];
+				if (fs.existsSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Auth"+path.sep+'Profiler.json')) {
+					var profiler=JSON.parse(require('fs').readFileSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Auth"+path.sep+'Profiler.json','utf-8'));
+					for (var el in profiler.profile) {
+						var p=profiler.profile[el];
+						if (p.indexOf(user)>-1) response.push(el);
+					};
+				};				
+				req.user.profiles=response;
 				res.end(JSON.stringify(req.user,null,4));
 			}); 			
 			app.get('/udid',function(req,res) {

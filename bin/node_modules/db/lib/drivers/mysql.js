@@ -202,6 +202,7 @@ module.exports={
 						var x=r[0].Column_name;
 						//console.log('_____ DELETE');
 						var sql="DELETE FROM "+tb+" WHERE "+x+" in ("+ndx.join(',')+")";
+						console.log(sql);
 						q.query(sql,function(err,rows,fields) {
 							q.end();
 							cb(err,rows);
@@ -338,7 +339,7 @@ module.exports={
 					var _fields=[];
 					var _boolean=[];
                     var zobj={};
-                    
+                    console.log(all_o);
 					for (var i=0;i<response.length;i++) {
                         if (all_o.indexOf(response[i].Field)>-1) zobj[response[i].Field]=o[response[i].Field];
 						if (response[i].Key=="PRI") r.push({
