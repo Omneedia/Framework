@@ -4439,7 +4439,12 @@ figlet(' omneedia', {
 		*/
 		
 		app.get('/notificationcenter.plugin',function(req,res) {
-			res.send('<html><head></head><script type="text/javascript">window.onload=function(){if (parent) {var oHead = document.getElementsByTagName("head")[0];var arrStyleSheets = parent.document.getElementsByTagName("link");for (var i = 0; i < arrStyleSheets.length; i++) oHead.appendChild(arrStyleSheets[i].cloneNode(true));}}</script><body class="NotificationBackground"><div>#Today</div></body></html>');
+            var body=[];
+            body.push('<html><head></head><script type="text/javascript">window.onload=function(){if (parent) {var oHead = document.getElementsByTagName("head")[0];var arrStyleSheets = parent.document.getElementsByTagName("link");for (var i = 0; i < arrStyleSheets.length; i++) oHead.appendChild(arrStyleSheets[i].cloneNode(true));}}</script><body class="NotificationBackground">');
+            var str=fs.readFileSync(__dirname+path.sep+"notificationcenter"+path.sep+"template.html",'utf-8');
+            body.push(str);
+            body.push("</body></html>");
+			res.send(body.join(''));
 		});
 		
 		/*
