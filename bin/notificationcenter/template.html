@@ -232,7 +232,6 @@ input[type="checkbox"] {
     background-image: url(../img/sprite.png);
     background-repeat: no-repeat;
     background-position: 37px -169px;
-
 }
 
 .gridster .preview-holder {
@@ -252,6 +251,22 @@ input[type="checkbox"] {
 ::-webkit-scrollbar-track {
   background: #b8c0c8;
 }
+.webget {
+    position:absolute;
+    top:0px;
+    left:0px;
+    width: 100%;
+    height: 100%;
+    background-color: orange;
+}
+.notificationbar {
+    background-color:#462e16;
+    font-family: "AvenirNextLTPro-UltLt";
+    font-weight: bold;
+    color: #CCCCCC;
+    width: 100%;
+    padding: 5px;
+}
 </style>
 <div class="container" style="padding: 10px">
     <div class="row">
@@ -265,14 +280,16 @@ input[type="checkbox"] {
 </div>
 <div style="width:100%;height:100%;overflow:scroll;scrollbar-face-color: slategray;scrollbar-track-color: #b8c0c8;">
     <div class="notificationdate"></div>
+    <div id="notificationweather"></div>
+    <div class="notificationbar">Mes applications</div>
     <div class="gridster">
         <ul>
-            <li id="li1" data-row="1" data-col="1" data-sizex="1" data-sizey="1">zz</li>
-            <li id="li2" data-row="2" data-col="1" data-sizex="1" data-sizey="1">aa</li>
-            <li id="li3" data-row="3" data-col="1" data-sizex="1" data-sizey="1">bb</li>
-            <li id="li4" data-row="1" data-col="2" data-sizex="1" data-sizey="1">zz</li>
-            <li id="li5" data-row="2" data-col="2" data-sizex="1" data-sizey="1">aa</li>
-            <li id="li6" data-row="3" data-col="2" data-sizex="1" data-sizey="1">bb</li>
+            <li id="li1" data-row="1" data-col="1" data-sizex="1" data-sizey="1"><div class="webget"></div></li>
+            <li id="li2" data-row="2" data-col="1" data-sizex="1" data-sizey="1"><div class="webget"></div><</li>
+            <li id="li3" data-row="3" data-col="1" data-sizex="1" data-sizey="1"><div class="webget"></div><</li>
+            <li id="li4" data-row="1" data-col="2" data-sizex="1" data-sizey="1"><div class="webget"></div><</li>
+            <li id="li5" data-row="2" data-col="2" data-sizex="1" data-sizey="1"><div class="webget"></div><</li>
+            <li id="li6" data-row="3" data-col="2" data-sizex="1" data-sizey="1"><div class="webget"></div><</li>
 
         </ul>
     </div>
@@ -291,7 +308,15 @@ if(localData!=null)
 		id_name += value.id;
         $(id_name).attr({"data-col":value.col, "data-row":value.row, "data-sizex":value.size_x, "data-sizey":value.size_y});
     });
-};		
+};	
+
+$.ajax({
+  url: "http://api.openweathermap.org/data/2.5/forecast/city?q=marseille&APPID=c184f62af7c3725f011626f041fd88ae"
+}).done(function( data ) {
+    var weather="http://openweathermap.org/img/w/"+data.list[0].weather[0].icon+".png";
+    $('#notificationweather').html('<img src="'+weather+'"></img>');
+});
+
 var grid_canvas = $(".gridster ul").gridster({
         widget_margins: [10, 10],
         widget_base_dimensions: [128, 128],

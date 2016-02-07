@@ -1,21 +1,21 @@
-2016-02-06 17:50:51 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
-2016-02-06 17:50:51 0 [Note] /Users/zucatti/ob/bin/mysql/bin/mysqld (mysqld 5.6.27) starting as process 1858 ...
-2016-02-06 17:50:51 1858 [Warning] Setting lower_case_table_names=2 because file system for /Users/zucatti/ob/bin/mysql/data/ is case insensitive
-2016-02-06 17:50:51 1858 [Note] InnoDB: Using atomics to ref count buffer pool pages
-2016-02-06 17:50:51 1858 [Note] InnoDB: The InnoDB memory heap is disabled
-2016-02-06 17:50:51 1858 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
-2016-02-06 17:50:51 1858 [Note] InnoDB: Memory barrier is not used
-2016-02-06 17:50:51 1858 [Note] InnoDB: Compressed tables use zlib 1.2.3
-2016-02-06 17:50:51 1858 [Note] InnoDB: Using CPU crc32 instructions
-2016-02-06 17:50:51 1858 [Note] InnoDB: Initializing buffer pool, size = 128.0M
-2016-02-06 17:50:51 1858 [Note] InnoDB: Completed initialization of buffer pool
-2016-02-06 17:50:51 1858 [Note] InnoDB: Highest supported file format is Barracuda.
-2016-02-06 17:50:51 1858 [Note] InnoDB: The log sequence numbers 0 and 0 in ibdata files do not match the log sequence number 9385498 in the ib_logfiles!
-2016-02-06 17:50:51 1858 [Note] InnoDB: Database was not shutdown normally!
-2016-02-06 17:50:51 1858 [Note] InnoDB: Starting crash recovery.
-2016-02-06 17:50:51 1858 [Note] InnoDB: Reading tablespace information from the .ibd files...
-2016-02-06 17:50:51 1858 [ERROR] InnoDB: Attempted to open a previously opened tablespace. Previous tablespace mysql/innodb_table_stats uses space ID: 1 at filepath: ./mysql/innodb_table_stats.ibd. Cannot open tablespace reservation_salles/agents which uses space ID: 1 at filepath: ./reservation_salles/agents.ibd
-2016-02-06 17:50:51 7fff7a5e7000  InnoDB: Operating system error number 2 in a file operation.
+2016-02-06 22:32:44 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
+2016-02-06 22:32:44 0 [Note] /Users/zucatti/ob/bin/mysql/bin/mysqld (mysqld 5.6.27) starting as process 2878 ...
+2016-02-06 22:32:44 2878 [Warning] Setting lower_case_table_names=2 because file system for /Users/zucatti/ob/bin/mysql/data/ is case insensitive
+2016-02-06 22:32:44 2878 [Note] InnoDB: Using atomics to ref count buffer pool pages
+2016-02-06 22:32:44 2878 [Note] InnoDB: The InnoDB memory heap is disabled
+2016-02-06 22:32:44 2878 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
+2016-02-06 22:32:44 2878 [Note] InnoDB: Memory barrier is not used
+2016-02-06 22:32:44 2878 [Note] InnoDB: Compressed tables use zlib 1.2.3
+2016-02-06 22:32:44 2878 [Note] InnoDB: Using CPU crc32 instructions
+2016-02-06 22:32:44 2878 [Note] InnoDB: Initializing buffer pool, size = 128.0M
+2016-02-06 22:32:44 2878 [Note] InnoDB: Completed initialization of buffer pool
+2016-02-06 22:32:44 2878 [Note] InnoDB: Highest supported file format is Barracuda.
+2016-02-06 22:32:44 2878 [Note] InnoDB: The log sequence numbers 0 and 0 in ibdata files do not match the log sequence number 9385498 in the ib_logfiles!
+2016-02-06 22:32:44 2878 [Note] InnoDB: Database was not shutdown normally!
+2016-02-06 22:32:44 2878 [Note] InnoDB: Starting crash recovery.
+2016-02-06 22:32:44 2878 [Note] InnoDB: Reading tablespace information from the .ibd files...
+2016-02-06 22:32:44 2878 [ERROR] InnoDB: Attempted to open a previously opened tablespace. Previous tablespace mysql/innodb_table_stats uses space ID: 1 at filepath: ./mysql/innodb_table_stats.ibd. Cannot open tablespace reservation_salles/agents which uses space ID: 1 at filepath: ./reservation_salles/agents.ibd
+2016-02-06 22:32:44 7fff7a5e7000  InnoDB: Operating system error number 2 in a file operation.
 InnoDB: The error means the system cannot find the path specified.
 InnoDB: If you are installing InnoDB, remember that you must create
 InnoDB: directories yourself, InnoDB does not create them.
