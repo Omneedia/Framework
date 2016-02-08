@@ -1,6 +1,7 @@
 {
 	"*" : [
 		"omneedia.Localizer",
+		"omneedia.Sockets",
 		"omneedia.App",
 		"omneedia.Auth"	
 	],

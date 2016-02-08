@@ -4,6 +4,7 @@
   "description": "Omneedia Framework",
   "main": "omneedia.js",
   "dependencies": {
+	"socket.io": "",
 	"adm-zip": "0.4.7",
 	"api": "",
 	"async": "1.2.1",
