@@ -3903,24 +3903,22 @@ figlet(' omneedia', {
 		var app = express();
 		
 		// initialize socket.io
-		if (Manifest.livereload.port)
+		if (Manifest.livereload)
 		{
 			var http = require('http').createServer(app);
 			var io = require('socket.io')(http);
-			http.listen(Manifest.livereload.port);
-		};
-		
-		// init session
-		io.on('connection', function (socket) {
-			var response = {
-				omneedia : {
-					engine: $_VERSION
-				},
-				session: _SESSION_
-			};		
-			socket.emit('session', JSON.stringify(response));
-		});
-		
+			http.listen(Manifest.livereload.port);		
+			// init session
+			io.on('connection', function (socket) {
+				var response = {
+					omneedia : {
+						engine: $_VERSION
+					},
+					session: _SESSION_
+				};		
+				socket.emit('session', JSON.stringify(response));
+			});
+		};		
 		/*
 		setup_settings
 		*/
