@@ -4,7 +4,7 @@
  *
  */
 
-$_VERSION = "0.9.6";
+$_VERSION = "0.9.6a";
 
 CDN = "http://omneedia.github.io/cdn"; //PROD
 //CDN = "/cdn"; // DEBUG
@@ -3223,7 +3223,7 @@ function App_Update(nn,cb)
 			Settings.CDN=CDN;
 			
 			if (manifest.blur) Settings.blur=manifest.blur; else Settings.blur=1;
-			
+			if (Manifest.livereload) Settings.LIVERELOAD='http://'+getIPAddress()+':'+Manifest.livereload.port; else Settings.LIVERELOAD="/";
 			fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Settings.js','Settings='+JSON.stringify(Settings));		
 			var ndx=fs.readFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'index.html','utf-8');
 			ndx=ndx.split('<title>')[0]+'<title>'+manifest.title+'</title>'+ndx.split('</title>')[1];		
@@ -3672,7 +3672,6 @@ figlet(' omneedia', {
 					Settings.REMOTE_API=MSettings.remote.auth;
 				};
 			};
-			
 			fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Settings.js',"Settings = "+JSON.stringify(Settings,null, 4));
 			
 			// ADD TO MANIFEST BUILD SETTINGS
@@ -3903,12 +3902,31 @@ figlet(' omneedia', {
 		
 		var app = express();
 		
+		// initialize socket.io
+		if (Manifest.livereload.port)
+		{
+			var http = require('http').createServer(app);
+			var io = require('socket.io')(http);
+			http.listen(Manifest.livereload.port);
+		};
+		
+		// init session
+		io.on('connection', function (socket) {
+			var response = {
+				omneedia : {
+					engine: $_VERSION
+				},
+				session: _SESSION_
+			};		
+			socket.emit('session', JSON.stringify(response));
+		});
+		
 		/*
 		setup_settings
 		*/
 				
 		var bodyParser=require('body-parser');
-
+				
 		app.use(bodyParser.json({limit: '5000mb', extended: true}));
 		app.use(bodyParser.urlencoded({limit: '5000mb', extended: true}));
 		
@@ -3939,7 +3957,7 @@ figlet(' omneedia', {
 		}));
 		
 		app.use(require('errorhandler')({ dumpExceptions: true, showStack: true }))
-		console.log(PROJECT_HOME+path.sep+'www'+path.sep);
+		//console.log(PROJECT_HOME+path.sep+'www'+path.sep);
 		app.use("/src",express.static(PROJECT_HOME+path.sep+'src'+path.sep));
 		
 		// MOBILE STUFF		
@@ -4042,7 +4060,6 @@ figlet(' omneedia', {
 				};
 				
 				Auth.user(profile,function(err,response) {
-					console.log(response);
 					req.session.user=response;
 					res.end("{}");
 				});				
@@ -4085,7 +4102,7 @@ figlet(' omneedia', {
 			});
 			
 			function ensureAuthenticated(req, res, next) {
-				console.log(req.session);
+				//console.log(req.session);
 				if (MSettings.auth.cas) req.session.authType="CAS";
 				if (MSettings.auth.google) req.session.authType="GOOGLE";
 				if (MSettings.auth.twitter) req.session.authType="TWITTER";
@@ -4196,6 +4213,9 @@ figlet(' omneedia', {
 		
 		app.post('/api',processRoute);
 		
+		
+		/* A Supprimer */
+		/* moved to socket.io */
 		app.get('/session',function(req,res) {			
 			res.header("Content-Type", "application/json; charset=utf-8");
 			var response = {
@@ -4206,6 +4226,7 @@ figlet(' omneedia', {
 			};
 			res.end(JSON.stringify(response,null,4));
 		});
+		/**/
 		
 		app.get('/api',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
@@ -4487,8 +4508,11 @@ figlet(' omneedia', {
 			}
 		};
 		
+	/** 
+	pre-Remove DB API	
+	**/
 		
-		app.get('/db',function(req,res) {
+/*		app.get('/db',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
 			var response = {
 				omneedia : {
@@ -4577,6 +4601,7 @@ figlet(' omneedia', {
 			//console.log(req.body);
 			res.end(JSON.stringify(arr));
 		});
+*/
 		// load plugins
 		if (fs.existsSync(PROJECT_SYSTEM+path.sep+"var"+path.sep+"www")) {
 			app.use('/app',express.static(PROJECT_SYSTEM+path.sep+"var"+path.sep+"www"));			
