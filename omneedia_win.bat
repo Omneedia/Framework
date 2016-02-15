@@ -21,7 +21,7 @@ REM setx GOOGLE_DEFAULT_CLIENT_SECRET "no"
 @set HOMEPATH=%~p0bin\git\bin
 @if not exist "%HOME%" @set HOME=%HOMEDRIVE%%HOMEPATH%
 @if not exist "%HOME%" @set HOME=%USERPROFILE%
-start %~dp0\bin\mysql\bin\mysqld --defaults-file=%~dp0\bin\mysql\my.ini -b %~dp0\bin\mysql\
+rem start %~dp0\bin\mysql\bin\mysqld --defaults-file=%~dp0\bin\mysql\my.ini -b %~dp0\bin\mysql\
 @cls
 @echo.
 @echo  -----------------------------
