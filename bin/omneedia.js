@@ -1555,14 +1555,7 @@ function build_native()
 			};
 			var f_ios=config.widget.platform[t];
 
-			f_ios.icon=[
-				{
-					$: {
-						src: "res/ios/icon-60@3x.png",
-						width: "87",
-						height: "87"
-					}
-				},                
+			f_ios.icon=[               
 				{
 					$: {
 						src: "res/ios/icon-60@3x.png",
@@ -1792,7 +1785,7 @@ function build_native()
 		if (PROCESS_IOS!=-1) {
 			var dir_native=PROJECT_HOME+path.sep+'dev'+path.sep+'native'+path.sep+'res'+path.sep+'ios'+path.sep;
 			// icons
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 87x87\! "'+dir_native+'icon-60@3x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 180x180\! "'+dir_native+'icon-60@3x.png"');
 			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 87x87\! "'+dir_native+'icon-small@3x.png"');
 			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 60x60\! "'+dir_native+'icon-60.png"');
 			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 120x120\! "'+dir_native+'icon-60@2x.png"');
@@ -1880,7 +1873,14 @@ function build_native()
 				shelljs.rm('-rf',PROJECT_HOME+path.sep+'dev'+path.sep+'native'+path.sep+'platforms'+path.sep+'android'+path.sep+'res'+path.sep+'values-*');
 				if (process.argv.indexOf("release")>-1) {
 					console.log('  - Compiling release APK... Please wait!');
-					shelljs.exec('cordova build --release android',{silent: true});
+					shelljs.exec('cordova build --release android',{silent: false});
+                    /*
+                    keytool -genkey -noprompt \
+ -alias alias1 \
+ -dname "CN=mqttserver.ibm.com, OU=ID, O=IBM, L=Hursley, S=Hants, C=GB" \
+ -keystore keystore \
+ -storepass password \
+ -keypass password*/
 					if (!fs.existsSync(PROJECT_HOME+path.sep+'etc'+path.sep+'app.keystore')) shelljs.exec('keytool -genkey -v -keystore "'+PROJECT_HOME+path.sep+'etc'+path.sep+'app.keystore'+'" -alias alias_name -keyalg RSA -keysize 2048 -validity 10000');
 				} else {
 					console.log('  - Compiling debug APK');
@@ -4247,8 +4247,6 @@ figlet(' omneedia', {
 		app.post('/api',processRoute);
 		
 		
-		/* A Supprimer */
-		/* moved to socket.io */
 		app.get('/session',function(req,res) {			
 			res.header("Content-Type", "application/json; charset=utf-8");
 			var response = {
@@ -4259,7 +4257,6 @@ figlet(' omneedia', {
 			};
 			res.end(JSON.stringify(response,null,4));
 		});
-		/**/
 		
 		app.get('/api',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
@@ -4541,100 +4538,7 @@ figlet(' omneedia', {
 			}
 		};
 		
-	/** 
-	pre-Remove DB API	
-	**/
-		
-/*		app.get('/db',function(req,res) {
-			res.header("Content-Type", "application/json; charset=utf-8");
-			var response = {
-				omneedia : {
-					engine: $_VERSION
-				},
-				namespace: PROJECT_NS,
-				db: []
-			};	
-			for (var i=0;i<MSettings.db.length;i++) {
-				response.db[response.db.length]=MSettings.db[i].name;
-			};
-			res.end(JSON.stringify(response,null,4));
-		});
-		app.get('/db/:db',function(req,res) {
-			res.header("Content-Type", "application/json; charset=utf-8");
-			var response = {
-				omneedia : {
-					engine: $_VERSION
-				},
-				namespace: PROJECT_NS,
-				db: req.params.db,
-				tables: []
-			};	
-			var uri = "";
-			for (var i=0;i<MSettings.db.length;i++) {
-				if (MSettings.db[i].name==req.params.db) {
-					uri=MSettings.db[i].uri;
-				};
-			};
-			if (uri=="") res.end('Database namespace not found');
-			var db={
-				type: uri.split('://')[0],
-				host: uri.split('://')[1].split('@')[1].split(':')[0],
-				user: uri.split('://')[1].split('@')[0].split(':')[0],
-				pass: uri.split('://')[1].split('@')[0].split(':')[1],
-				name: uri.split('://')[1].split('@')[1].split('/')[1]			
-			};
-			if (uri.split('://')[1].split('@')[1].split(':').length>1) db.port=uri.split('://')[1].split('@')[1].split(':')[1].split('/')[0]*1; else db.port=3306;
-			if (db.type=="mysql") get_mysql_tables(db,res,response);
-		});		
-		app.get('/db/:db/:table',function(req,res) {
-			res.header("Content-Type", "application/json; charset=utf-8");
-			var table=req.params.table.split('{')[0];
-			try {
-				var params=req.param('table').split('{')[1].split('}')[0];
-			} catch(e) {
-				var params="";
-			};
-			var uri = "";
-			for (var i=0;i<MSettings.db.length;i++) {
-				if (MSettings.db[i].name==req.param('db')) {
-					uri=MSettings.db[i].uri;
-				};
-			};
-			if (uri=="") res.end('Database namespace not found');
-			//res.end(req.param('table')+' '+JSON.stringify(req.query));
-			var dbi=require('db');
-			var SQL=[];
-			var fieldz=[];
-			var orderby=[];
-			SQL.push("SELECT");
-			if (params=="") SQL.push('*'); else {
-				params=params.split(',');
-				for (var i=0;i<params.length;i++) {
-					if (params[i].indexOf('+')>-1) {
-						orderby.push(params[i].substr(0,params[i].indexOf('+')-1));
-						fieldz.push(params[i].substr(0,params[i].indexOf('+')-1));
-					} else fieldz.push(params[i]);
-				};
-				SQL.push(fieldz.join(','));
-			};
-			SQL.push("FROM");
-			SQL.push(table);
-			SQL.push("WHERE");
-			SQL.push('-1');
-			dbi.model(req.param('db'),SQL.join(' '),function(e,r) {
-				res.end(JSON.stringify(r,null,4));
-			});
-		});	
-		
-		app.delete('/db/:db/:table',function(req,res) {
-			res.header("Content-Type", "application/json; charset=utf-8");
-			var arr={
-				status: "done"
-			};
-			//console.log(req.body);
-			res.end(JSON.stringify(arr));
-		});
-*/
+
 		// load plugins
 		if (fs.existsSync(PROJECT_SYSTEM+path.sep+"var"+path.sep+"www")) {
 			app.use('/app',express.static(PROJECT_SYSTEM+path.sep+"var"+path.sep+"www"));			

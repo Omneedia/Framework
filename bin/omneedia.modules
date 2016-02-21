@@ -2,7 +2,8 @@
 	"*" : [
 		"omneedia.Localizer",
 		"omneedia.App",
-		"omneedia.Auth"	
+		"omneedia.Auth",
+        "omneedia.SnapSVG"
 	],
 	"desktop": [
 		"omneedia.desktop.Uploader",
