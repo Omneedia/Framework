@@ -4,10 +4,10 @@
  *
  */
 
-$_VERSION = "0.9.6a";
+$_VERSION = "0.9.7";
 
-CDN = "http://omneedia.github.io/cdn"; //PROD
-//CDN = "/cdn"; // DEBUG
+//CDN = "http://omneedia.github.io/cdn"; //PROD
+CDN = "/cdn"; // DEBUG
 
 var fs=require('fs');
 var path=require('path');
@@ -1559,6 +1559,13 @@ function build_native()
 				{
 					$: {
 						src: "res/ios/icon-60@3x.png",
+						width: "87",
+						height: "87"
+					}
+				},                
+				{
+					$: {
+						src: "res/ios/icon-60@3x.png",
 						width: "180",
 						height: "180"
 					}
@@ -1659,6 +1666,13 @@ function build_native()
 						src: "res/ios/icon-50@2x.png",
 						width: "100",
 						height: "100"
+					}
+				},					
+				{
+					$: {
+						src: "res/ios/icon-83.5@2x.png",
+						width: "83.5",
+						height: "83.5"
 					}
 				}					
 			];
@@ -1778,32 +1792,34 @@ function build_native()
 		if (PROCESS_IOS!=-1) {
 			var dir_native=PROJECT_HOME+path.sep+'dev'+path.sep+'native'+path.sep+'res'+path.sep+'ios'+path.sep;
 			// icons
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 180x180 "'+dir_native+'icon-60@3x.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 60x60 "'+dir_native+'icon-60.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 120x120 "'+dir_native+'icon-60@2x.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 76x76 "'+dir_native+'icon-76.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 152x152 "'+dir_native+'icon-76@2x.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 40x40 "'+dir_native+'icon-40.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 80x80 "'+dir_native+'icon-40@2x.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 57x57 "'+dir_native+'icon.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 114x114 "'+dir_native+'icon@2x.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 72x72 "'+dir_native+'icon-72.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 144x144 "'+dir_native+'icon-72@2x.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 29x29 "'+dir_native+'icon-small.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 58x58 "'+dir_native+'icon-small@2x.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 50x50 "'+dir_native+'icon-50.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 100x100 "'+dir_native+'icon-50@2x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 87x87\! "'+dir_native+'icon-60@3x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 87x87\! "'+dir_native+'icon-small@3x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 60x60\! "'+dir_native+'icon-60.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 120x120\! "'+dir_native+'icon-60@2x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 76x76\! "'+dir_native+'icon-76.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 152x152\! "'+dir_native+'icon-76@2x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 40x40\! "'+dir_native+'icon-40.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 80x80\! "'+dir_native+'icon-40@2x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 57x57\! "'+dir_native+'icon.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 114x114\! "'+dir_native+'icon@2x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 72x72\! "'+dir_native+'icon-72.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 144x144\! "'+dir_native+'icon-72@2x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 29x29\! "'+dir_native+'icon-small.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 58x58\! "'+dir_native+'icon-small@2x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 50x50\! "'+dir_native+'icon-50.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 100x100\! "'+dir_native+'icon-50@2x.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+PROJECT_HOME+path.sep+Manifest.icon.file+'" -background "'+Manifest.icon.background+'" -flatten -resize 167x167\! "'+dir_native+'icon-83.5@2x.png"');
 			// splashscreen
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 320x480 "'+dir_native+'Default~iphone.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 640x960 "'+dir_native+'Default@2x~iphone.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 768x1024 "'+dir_native+'Default-Portrait~ipad.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 1536x2048 "'+dir_native+'Default-Portrait@2x~ipad.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 1024x768 "'+dir_native+'Default-Landscape~ipad.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 2048x1536 "'+dir_native+'Default-Landscape@2x~ipad.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 640x1136 "'+dir_native+'Default-568h@2x~iphone.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 750x1334 "'+dir_native+'Default-667h.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 1242x2208 "'+dir_native+'Default-736h.png"');
-			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -size 2208x1242 "'+dir_native+'Default-Landscape-736h.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 320x480\! "'+dir_native+'Default~iphone.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 640x960\! "'+dir_native+'Default@2x~iphone.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 768x1024\! "'+dir_native+'Default-Portrait~ipad.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 1536x2048\! "'+dir_native+'Default-Portrait@2x~ipad.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 1024x768\! "'+dir_native+'Default-Landscape~ipad.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 2048x1536\! "'+dir_native+'Default-Landscape@2x~ipad.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 640x1136\! "'+dir_native+'Default-568h@2x~iphone.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 750x1334\! "'+dir_native+'Default-667h.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 1242x2208\! "'+dir_native+'Default-736h.png"');
+			GRAPHICS.push('"'+__dirname+path.sep+'im'+path.sep+'convert" "'+__dirname+path.sep+'transparent.png" -gravity center -background "'+Manifest.splashscreen.background+'" -resize 2208x1242\! "'+dir_native+'Default-Landscape-736h.png"');
 		};
 
 		console.log('  - Adding resources');
@@ -1840,8 +1856,26 @@ function build_native()
 			shelljs.cp(PROJECT_HOME+path.sep+'builds'+path.sep+'webapp'+path.sep+Manifest.version+'.'+Manifest.build+path.sep+'Contents'+path.sep+'Application.js',PROJECT_HOME+path.sep+'dev'+path.sep+'native'+path.sep+'www'+path.sep+'Contents'+path.sep+'Application.js');
 			shelljs.cp(PROJECT_HOME+path.sep+'builds'+path.sep+'webapp'+path.sep+Manifest.version+'.'+Manifest.build+path.sep+'Contents'+path.sep+'Resources.css',PROJECT_HOME+path.sep+'dev'+path.sep+'native'+path.sep+'www'+path.sep+'Contents'+path.sep+'Resources.css');
 			
+            shelljs.exec("cordova prepare");
 			
-			
+            /*if (PROCESS_IOS!=-1) {
+                if (process.argv.indexOf("unsafe")>-1) {
+                    var plist=require('plist');
+                    // on parse le plist généré par cordova
+                    var xcode_dir=PROJECT_HOME+path.sep+'dev'+path.sep+'native'+path.sep+'platforms'+path.sep+"ios";
+                    var dir=fs.readdirSync(xcode_dir);
+                    var project_ios="";
+                    for (var i=0;i<dir.length;i++) {
+                        if (dir[i].indexOf(".xcodeproj")>-1) project_ios=dir[i].substr(0,dir[i].indexOf(".xcodeproj"));  
+                    };
+                    if (project_ios!="") project_ios=xcode_dir+path.sep+project_ios+path.sep+project_ios+"-Info.plist";
+                    var cfg=fs.readFileSync(project_ios,"utf-8");
+                    cfg=plist.parse(cfg);
+                    console.log(cfg);
+                    //
+                }  
+            };*/
+                
 			if (PROCESS_ANDROID!=-1) {
 				shelljs.rm('-rf',PROJECT_HOME+path.sep+'dev'+path.sep+'native'+path.sep+'platforms'+path.sep+'android'+path.sep+'res'+path.sep+'values-*');
 				if (process.argv.indexOf("release")>-1) {
@@ -1911,7 +1945,7 @@ function res_html_compile()
 					var body=html.split('<body ')[1].split('<script src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.js"')[0].replace(/\s{2,}/g, '');
 					var launcher="<script>window.setTimeout(function(){var script=document.createElement('script');script.src=\"Contents/Application.js\";document.getElementsByTagName('body')[0].appendChild(script);},1000);</script>";
 					//var launcher='<script src="Contents/Application.js"></script>';
-					if (process.argv.indexOf("unsafe")>-1)
+					if (process.argv.indexOf("unsafe")>-1) 
 					var html='<!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="default-src *; style-src \'self\' \'unsafe-inline\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\'"><title>'+title+'</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><script>'+spinner+'</script><style type="text/css">'+link+'</style>'+links.join('')+'</head><body '+body+'><link rel=stylesheet type=text/css href="Contents/Resources.css"></link>'+launcher+'</body></html>';
 					else
 					var html='<!DOCTYPE html><html><head><title>'+title+'</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><script>'+spinner+'</script><style type="text/css">'+link+'</style>'+links.join('')+'</head><body '+body+'><link rel=stylesheet type=text/css href="Contents/Resources.css"></link>'+launcher+'</body></html>';
@@ -2735,6 +2769,7 @@ function AppUpdate(zzz)
 		else
 		var y={};
 		var is_new=-1;
+        if (!Manifest.db) Manifest.db=[];
 		if (Manifest.db.length>0) {
 			for (var i=0;i<Manifest.db.length;i++) {
 				var x0,y0=-1;

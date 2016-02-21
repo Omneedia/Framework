@@ -1,33 +1,80 @@
-2016-02-06 22:32:44 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
-2016-02-06 22:32:44 0 [Note] /Users/zucatti/ob/bin/mysql/bin/mysqld (mysqld 5.6.27) starting as process 2878 ...
-2016-02-06 22:32:44 2878 [Warning] Setting lower_case_table_names=2 because file system for /Users/zucatti/ob/bin/mysql/data/ is case insensitive
-2016-02-06 22:32:44 2878 [Note] InnoDB: Using atomics to ref count buffer pool pages
-2016-02-06 22:32:44 2878 [Note] InnoDB: The InnoDB memory heap is disabled
-2016-02-06 22:32:44 2878 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
-2016-02-06 22:32:44 2878 [Note] InnoDB: Memory barrier is not used
-2016-02-06 22:32:44 2878 [Note] InnoDB: Compressed tables use zlib 1.2.3
-2016-02-06 22:32:44 2878 [Note] InnoDB: Using CPU crc32 instructions
-2016-02-06 22:32:44 2878 [Note] InnoDB: Initializing buffer pool, size = 128.0M
-2016-02-06 22:32:44 2878 [Note] InnoDB: Completed initialization of buffer pool
-2016-02-06 22:32:44 2878 [Note] InnoDB: Highest supported file format is Barracuda.
-2016-02-06 22:32:44 2878 [Note] InnoDB: The log sequence numbers 0 and 0 in ibdata files do not match the log sequence number 9385498 in the ib_logfiles!
-2016-02-06 22:32:44 2878 [Note] InnoDB: Database was not shutdown normally!
-2016-02-06 22:32:44 2878 [Note] InnoDB: Starting crash recovery.
-2016-02-06 22:32:44 2878 [Note] InnoDB: Reading tablespace information from the .ibd files...
-2016-02-06 22:32:44 2878 [ERROR] InnoDB: Attempted to open a previously opened tablespace. Previous tablespace mysql/innodb_table_stats uses space ID: 1 at filepath: ./mysql/innodb_table_stats.ibd. Cannot open tablespace reservation_salles/agents which uses space ID: 1 at filepath: ./reservation_salles/agents.ibd
-2016-02-06 22:32:44 7fff7a5e7000  InnoDB: Operating system error number 2 in a file operation.
-InnoDB: The error means the system cannot find the path specified.
-InnoDB: If you are installing InnoDB, remember that you must create
-InnoDB: directories yourself, InnoDB does not create them.
-InnoDB: Error: could not open single-table tablespace file ./reservation_salles/agents.ibd
-InnoDB: We do not continue the crash recovery, because the table may become
-InnoDB: corrupt if we cannot apply the log records in the InnoDB log to it.
-InnoDB: To fix the problem and start mysqld:
-InnoDB: 1) If there is a permission problem in the file and mysqld cannot
-InnoDB: open the file, you should modify the permissions.
-InnoDB: 2) If the table is not needed, or you can restore it from a backup,
-InnoDB: then you can remove the .ibd file, and InnoDB will do a normal
-InnoDB: crash recovery and ignore that table.
-InnoDB: 3) If the file system or the disk is broken, and you cannot remove
-InnoDB: the .ibd file, you can set innodb_force_recovery > 0 in my.cnf
-InnoDB: and force InnoDB to continue crash recovery here.
+2016-02-20 12:00:35 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
+2016-02-20 12:00:35 0 [Note] /Users/zucatti/ob/bin/mysql/bin/mysqld (mysqld 5.6.27) starting as process 934 ...
+2016-02-20 12:00:35 934 [Warning] Setting lower_case_table_names=2 because file system for /Users/zucatti/ob/bin/mysql/data/ is case insensitive
+2016-02-20 12:00:35 934 [Note] InnoDB: Using atomics to ref count buffer pool pages
+2016-02-20 12:00:35 934 [Note] InnoDB: The InnoDB memory heap is disabled
+2016-02-20 12:00:35 934 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
+2016-02-20 12:00:35 934 [Note] InnoDB: Memory barrier is not used
+2016-02-20 12:00:35 934 [Note] InnoDB: Compressed tables use zlib 1.2.3
+2016-02-20 12:00:35 934 [Note] InnoDB: Using CPU crc32 instructions
+2016-02-20 12:00:35 934 [Note] InnoDB: Initializing buffer pool, size = 128.0M
+2016-02-20 12:00:35 934 [Note] InnoDB: Completed initialization of buffer pool
+2016-02-20 12:00:35 934 [Note] InnoDB: Highest supported file format is Barracuda.
+2016-02-20 12:00:35 934 [Note] InnoDB: The log sequence numbers 9385508 and 9385508 in ibdata files do not match the log sequence number 54230141 in the ib_logfiles!
+2016-02-20 12:00:35 934 [Note] InnoDB: Database was not shutdown normally!
+2016-02-20 12:00:35 934 [Note] InnoDB: Starting crash recovery.
+2016-02-20 12:00:35 934 [Note] InnoDB: Reading tablespace information from the .ibd files...
+2016-02-20 12:00:35 934 [Note] InnoDB: Restoring possible half-written data pages 
+2016-02-20 12:00:35 934 [Note] InnoDB: from the doublewrite buffer...
+2016-02-20 12:00:35 934 [Note] InnoDB: 128 rollback segment(s) are active.
+2016-02-20 12:00:35 934 [Note] InnoDB: Waiting for purge to start
+2016-02-20 12:00:35 934 [Note] InnoDB: 5.6.27 started; log sequence number 54230141
+2016-02-20 12:00:35 934 [Note] Server hostname (bind-address): '*'; port: 3306
+2016-02-20 12:00:35 934 [Note] IPv6 is available.
+2016-02-20 12:00:35 934 [Note]   - '::' resolves to '::';
+2016-02-20 12:00:35 934 [Note] Server socket created on IP: '::'.
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'cond_instances' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_current' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_history' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_history_long' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_summary_by_host_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_summary_by_instance' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_summary_by_thread_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_summary_by_user_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_summary_by_account_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_waits_summary_global_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'file_instances' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'file_summary_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'file_summary_by_instance' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'host_cache' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'mutex_instances' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'objects_summary_global_by_type' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'performance_timers' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'rwlock_instances' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'setup_actors' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'setup_consumers' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'setup_instruments' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'setup_objects' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'setup_timers' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'table_io_waits_summary_by_index_usage' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'table_io_waits_summary_by_table' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'table_lock_waits_summary_by_table' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'threads' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_stages_current' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_stages_history' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_stages_history_long' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_stages_summary_by_thread_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_stages_summary_by_account_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_stages_summary_by_user_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_stages_summary_by_host_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_stages_summary_global_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_current' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_history' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_history_long' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_summary_by_thread_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_summary_by_account_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_summary_by_user_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_summary_by_host_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_summary_global_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'events_statements_summary_by_digest' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'users' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'accounts' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'hosts' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'socket_instances' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'socket_summary_by_instance' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'socket_summary_by_event_name' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'session_connect_attrs' has the wrong structure
+2016-02-20 12:00:36 934 [ERROR] Native table 'performance_schema'.'session_account_connect_attrs' has the wrong structure
+2016-02-20 12:00:36 934 [Note] Event Scheduler: Loaded 0 events
+2016-02-20 12:00:36 934 [Note] /Users/zucatti/ob/bin/mysql/bin/mysqld: ready for connections.
+Version: '5.6.27'  socket: '/tmp/mysql.sock'  port: 3306  MySQL Community Server (GPL)
