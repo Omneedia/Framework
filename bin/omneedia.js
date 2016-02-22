@@ -4725,8 +4725,8 @@ figlet(' omneedia', {
 			app.listen(Manifest.server.port);
 			
 			if (Manifest.platform=="mobile") {
-				console.log('  - Debug service started at http://'+getIPAddress()+':'+Manifest.debug.port+'/client');
-				Exec(__dirname+path.sep+"node_modules"+path.sep+".bin"+path.sep+"weinre --httpPort "+Manifest.debug.port+" --boundHost -all-",function(){});
+				//console.log('  - Debug service started at http://'+getIPAddress()+':'+Manifest.debug.port+'/client');
+				//Exec(__dirname+path.sep+"node_modules"+path.sep+".bin"+path.sep+"weinre --httpPort "+Manifest.debug.port+" --boundHost -all-",function(){});
 				if (_FIRST_TIME==1) open('http://'+getIPAddress()+':'+Manifest.server.port+'/connect/','chrome');
 			} else
 			{
