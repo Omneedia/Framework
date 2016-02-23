@@ -1,5 +1,7 @@
 !.gitignore
 _gsdata_
+omneedia.scanner.libs
+bin/logs
 bin/.home
 bin/.repositories
 bin/uploads

@@ -4009,6 +4009,7 @@ figlet(' omneedia', {
 				index=index.replace('<head>','<head><script type=text/javascript src="http://'+getIPAddress()+':'+Manifest.debug.port+'/target/target-script-min.js#anonymous"></script>');
 				res.send(index);
 			});
+            // MOBILE APPS
 			app.use("/connect",express.static(__dirname +path.sep+"scanner"));
 			app.use("/plugins",express.static(__dirname +path.sep+"scanner"+path.sep+"plugins"));
 			app.get('/cordova.js',function(req,res) {
@@ -4016,22 +4017,22 @@ figlet(' omneedia', {
 				var ua = req.headers['user-agent'];
 				if (/Windows NT/.test(ua)) {
 					console.log('browser');
-					res.end(fs.readFileSync(__dirname +path.sep+"scanner"+path.sep+"cordova"+path.sep+"browser"+path.sep+"cordova.js","utf-8"));
+					res.end(fs.readFileSync(__dirname +path.sep+"scanner"+path.sep+"cordova"+path.sep+"cordova.browser.js","utf-8"));
 					return;				
 				};
 				if (/(Intel|PPC) Mac OS X/.test(ua)) {
 					console.log('browser');
-					res.end(fs.readFileSync(__dirname +path.sep+"scanner"+path.sep+"cordova"+path.sep+"browser"+path.sep+"cordova.js","utf-8"));
+					res.end(fs.readFileSync(__dirname +path.sep+"scanner"+path.sep+"cordova"+path.sep+"cordova.browser.js","utf-8"));
 					return;								
 				};
 				if (/like Mac OS X/.test(ua)) {
 					console.log('IOS');
-					res.end(fs.readFileSync(__dirname +path.sep+"scanner"+path.sep+"cordova"+path.sep+"ios"+path.sep+"cordova.js","utf-8"));
+					res.end(fs.readFileSync(__dirname +path.sep+"scanner"+path.sep+"cordova"+path.sep+"cordova.ios.js","utf-8"));
 					return;
 				};
 				if (/Android/.test(ua)) {
 					console.log('ANDROID');
-					res.end(fs.readFileSync(__dirname +path.sep+"scanner"+path.sep+"cordova"+path.sep+"android"+path.sep+"cordova.js","utf-8"));
+					res.end(fs.readFileSync(__dirname +path.sep+"scanner"+path.sep+"cordova"+path.sep+"cordova.android.js","utf-8"));
 					return;
 				};
 				
