@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-file.FileReader", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,7 +22,6 @@ cordova.define("cordova-plugin-file.FileReader", function(require, exports, modu
 var exec = require('cordova/exec'),
     modulemapper = require('cordova/modulemapper'),
     utils = require('cordova/utils'),
-    File = require('./File'),
     FileError = require('./FileError'),
     ProgressEvent = require('./ProgressEvent'),
     origFileReader = modulemapper.getOriginalSymbol(window, 'FileReader');
@@ -91,7 +90,9 @@ function initRead(reader, file) {
         return true;
     }
 
-    reader.onloadstart && reader.onloadstart(new ProgressEvent("loadstart", {target:reader}));
+    if (reader.onloadstart) {
+        reader.onloadstart(new ProgressEvent("loadstart", {target:reader}));
+    }
 }
 
 /**
@@ -388,5 +389,3 @@ FileReader.prototype.readAsArrayBuffer = function(file) {
 };
 
 module.exports = FileReader;
-
-});

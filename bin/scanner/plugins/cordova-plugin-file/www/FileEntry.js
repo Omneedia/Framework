@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-file.FileEntry", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -52,9 +52,13 @@ FileEntry.prototype.createWriter = function(successCallback, errorCallback) {
         var writer = new FileWriter(filePointer);
 
         if (writer.localURL === null || writer.localURL === "") {
-            errorCallback && errorCallback(new FileError(FileError.INVALID_STATE_ERR));
+            if (errorCallback) {
+                errorCallback(new FileError(FileError.INVALID_STATE_ERR));
+            }
         } else {
-            successCallback && successCallback(writer);
+            if (successCallback) {
+                successCallback(writer);
+            }
         }
     }, errorCallback);
 };
@@ -79,5 +83,3 @@ FileEntry.prototype.file = function(successCallback, errorCallback) {
 
 
 module.exports = FileEntry;
-
-});

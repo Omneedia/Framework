@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-contacts.ContactAddress", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -44,5 +44,3 @@ var ContactAddress = function(pref, type, formatted, streetAddress, locality, re
 };
 
 module.exports = ContactAddress;
-
-});

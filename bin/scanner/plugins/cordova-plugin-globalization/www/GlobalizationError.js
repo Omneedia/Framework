@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-globalization.GlobalizationError", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -39,5 +39,3 @@ GlobalizationError.PARSING_ERROR = 2;
 GlobalizationError.PATTERN_ERROR = 3;
 
 module.exports = GlobalizationError;
-
-});

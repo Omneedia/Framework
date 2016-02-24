@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-file.DirectoryReader", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -71,5 +71,3 @@ DirectoryReader.prototype.readEntries = function(successCallback, errorCallback)
 };
 
 module.exports = DirectoryReader;
-
-});

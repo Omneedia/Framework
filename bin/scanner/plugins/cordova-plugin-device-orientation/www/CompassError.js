@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-device-orientation.CompassError", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -32,5 +32,3 @@ CompassError.COMPASS_INTERNAL_ERR = 0;
 CompassError.COMPASS_NOT_SUPPORTED = 20;
 
 module.exports = CompassError;
-
-});

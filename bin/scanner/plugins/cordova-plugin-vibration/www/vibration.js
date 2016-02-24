@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-vibration.notification", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -80,6 +80,8 @@ module.exports = {
         //cancel vibration (param = 0 or [])
         else
             exec(null, null, "Vibration", "cancelVibration", []);
+
+        return true;
     },
 
     /**
@@ -117,5 +119,3 @@ module.exports = {
         exec(null, null, "Vibration", "cancelVibration", []);
     }
 };
-
-});

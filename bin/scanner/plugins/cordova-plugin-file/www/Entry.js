@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-file.Entry", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -109,8 +109,7 @@ Entry.prototype.moveTo = function(parent, newName, successCallback, errorCallbac
     var fail = errorCallback && function(code) {
         errorCallback(new FileError(code));
     };
-    var filesystem = this.filesystem,
-        srcURL = this.toInternalURL(),
+    var srcURL = this.toInternalURL(),
         // entry name
         name = newName || this.name,
         success = function(entry) {
@@ -125,7 +124,9 @@ Entry.prototype.moveTo = function(parent, newName, successCallback, errorCallbac
             }
             else {
                 // no Entry object returned
-                fail && fail(FileError.NOT_FOUND_ERR);
+                if (fail) {
+                    fail(FileError.NOT_FOUND_ERR);
+                }
             }
         };
 
@@ -150,8 +151,7 @@ Entry.prototype.copyTo = function(parent, newName, successCallback, errorCallbac
     var fail = errorCallback && function(code) {
         errorCallback(new FileError(code));
     };
-    var filesystem = this.filesystem,
-        srcURL = this.toInternalURL(),
+    var srcURL = this.toInternalURL(),
         // entry name
         name = newName || this.name,
         // success callback
@@ -167,7 +167,9 @@ Entry.prototype.copyTo = function(parent, newName, successCallback, errorCallbac
             }
             else {
                 // no Entry object returned
-                fail && fail(FileError.NOT_FOUND_ERR);
+                if (fail) {
+                    fail(FileError.NOT_FOUND_ERR);
+                }
             }
         };
 
@@ -258,5 +260,3 @@ Entry.prototype.getParent = function(successCallback, errorCallback) {
 };
 
 module.exports = Entry;
-
-});

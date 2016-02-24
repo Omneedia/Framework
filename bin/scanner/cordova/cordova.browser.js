@@ -1,5 +1,5 @@
 // Platform: browser
-// 1b111058631e118dc37da473e30b60214c211d76
+// c517ca811b4948b630e0b74dbae6c9637939da24
 /*
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -872,7 +872,7 @@ function readConfig(success, error) {
     }
 
     try {
-        xhr.open("get", "config.xml", true);
+        xhr.open("get", "/config.xml", true);
         xhr.send();
     } catch(e) {
         fail('[Browser][cordova.js][readConfig] Could not XHR config.xml: ' + JSON.stringify(e));

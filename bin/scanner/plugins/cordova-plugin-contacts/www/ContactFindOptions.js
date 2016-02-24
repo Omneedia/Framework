@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-contacts.ContactFindOptions", function(require, exports, module) { /*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,14 +24,15 @@ cordova.define("cordova-plugin-contacts.ContactFindOptions", function(require, e
  * @constructor
  * @param filter used to match contacts against
  * @param multiple boolean used to determine if more than one contact should be returned
+ * @param desiredFields 
+ * @param hasPhoneNumber boolean used to filter the search and only return contacts that have a phone number informed
  */
 
-var ContactFindOptions = function(filter, multiple, desiredFields) {
+var ContactFindOptions = function(filter, multiple, desiredFields, hasPhoneNumber) {
     this.filter = filter || '';
     this.multiple = (typeof multiple != 'undefined' ? multiple : false);
     this.desiredFields = typeof desiredFields != 'undefined' ? desiredFields : [];
+    this.hasPhoneNumber = typeof hasPhoneNumber != 'undefined' ? hasPhoneNumber : false;
 };
 
 module.exports = ContactFindOptions;
-
-});
