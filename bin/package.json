@@ -19,6 +19,7 @@
 	"cordova": "",
 	"cors": "",
 	"errorhandler": "",
+    "weinre": "",
 	"express": "",
 	"express-session": "",
 	"fsmonitor": "",

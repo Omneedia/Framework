@@ -4012,6 +4012,31 @@ figlet(' omneedia', {
             // MOBILE APPS
 			app.use("/connect",express.static(__dirname +path.sep+"scanner"));
 			app.use("/plugins",express.static(__dirname +path.sep+"scanner"+path.sep+"plugins"));
+            app.get('/plugins/(*)',function(req,res) {
+                var url=req.originalUrl.split('/plugins/')[1];
+                var dir=__dirname +path.sep+"scanner"+path.sep+"plugins"+path.sep;
+                var ua = req.headers['user-agent'];
+                if (/Windows NT/.test(ua)) {
+					console.log('browser');
+					dir+="browser";
+				};
+				if (/(Intel|PPC) Mac OS X/.test(ua)) {
+					console.log('browser');
+					console.log('browser');
+					dir+="browser";
+				};                
+				if (/like Mac OS X/.test(ua)) {
+					console.log('IOS');
+					dir+="ios";
+				};
+				if (/Android/.test(ua)) {
+					console.log('ANDROID');
+					console.log('IOS');
+					dir+="android";
+				};
+                res.end(fs.readFileSync(dir+path.sep+url,"utf-8"));
+                return;
+            });
 			app.get('/cordova.js',function(req,res) {
 				res.set('Content-Type', 'text/javascript');
 				var ua = req.headers['user-agent'];
